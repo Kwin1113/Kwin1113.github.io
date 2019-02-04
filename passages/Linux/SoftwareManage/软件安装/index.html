@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com">
+  
+  
+  
+  <title>软件安装 | Kwin的学习博客</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Linux,软件管理,Linux,">
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n' , 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+    <meta name="description" content="Kwin的学习经历整理。">
+  
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+
+  
+    <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+    <link href="https://cdn.bootcss.com/social-share.js/1.0.16/css/share.min.css" rel="stylesheet">
+  
+  
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+  
+  
+    <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+  <body>
+
+    
+
+    <div id="app">
+
+      <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Kwin.xyz</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a href="/" target="_self">
+              主页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a href="/archives/" target="_self">
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a href="/categories/" target="_self">
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a href="/tags/" target="_self">
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a href="/about/" target="_self">
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else="">抓到我</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a href="https://github.com/Kwin1113" target="_blank">
+                    Github
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>软件安装</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2019-02-04
+    </span>
+    
+      <span>
+        分类 : 
+          <a href="/categories/Linux/">
+            Linux
+          </a>
+      </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="软件安装"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <!-- 文章的正式内容 -->
+<h3 id="RPM包命名原则"><a href="#RPM包命名原则" class="headerlink" title="RPM包命名原则"></a>RPM包命名原则</h3><ul>
+<li>httpd-2.2.15-15.el6.centos.1.i686.rpm<br>-httpd 软件包名<br>-2.2.15 软件版本<br>-15 软件发布次数<br>-el6.centos 适合的Linux平台<br>-i686 适合的硬件平台<br>-rpm rpm包扩展名<h3 id="RPM包依赖性"><a href="#RPM包依赖性" class="headerlink" title="RPM包依赖性"></a>RPM包依赖性</h3></li>
+<li>树形依赖：a-&gt;b-&gt;c</li>
+<li>环形依赖：a-&gt;b-&gt;c-&gt;a</li>
+<li>模块依赖：模块依赖，查询网站：<a href="http://www.rpmfind.net" target="_blank" rel="noopener">www.rpmfind.net</a><h3 id="包全名和包名"><a href="#包全名和包名" class="headerlink" title="包全名和包名"></a>包全名和包名</h3></li>
+<li>包全名：操作的包是没有安装的软件报时，使用包全名。而且要注意路径。</li>
+<li>包名：操作已经安装的软件包时，使用包名，是搜索/var/lib/rpm/中的数据库<h3 id="RPM操作"><a href="#RPM操作" class="headerlink" title="RPM操作"></a>RPM操作</h3><h4 id="RPM安装"><a href="#RPM安装" class="headerlink" title="RPM安装"></a>RPM安装</h4></li>
+<li>rpm -ivh 包全名<br>-i（install）：安装<br>-v（verbose）：显示详细信息<br>-h（hash）：显示进度<br>—nodeps：不检测依赖性<h4 id="RPM包升级"><a href="#RPM包升级" class="headerlink" title="RPM包升级"></a>RPM包升级</h4></li>
+<li>rpm -Uvh 包全名<br>-U（upgrade）：升级<h4 id="RPM包卸载"><a href="#RPM包卸载" class="headerlink" title="RPM包卸载"></a>RPM包卸载</h4></li>
+<li>rpm -e 包全名<br>-e（erase）：卸载<br>—nodeps：不检查依赖性<h4 id="RPM包查询"><a href="#RPM包查询" class="headerlink" title="RPM包查询"></a>RPM包查询</h4><h5 id="RPM包默认安装位置"><a href="#RPM包默认安装位置" class="headerlink" title="RPM包默认安装位置"></a>RPM包默认安装位置</h5></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>路径</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>/etc/</td>
+<td>配置文件安装目录</td>
+</tr>
+<tr>
+<td>/usr/bin/</td>
+<td>可执行的命令安装目录</td>
+</tr>
+<tr>
+<td>/usr/lib/</td>
+<td>程序所使用的函数库保存位置</td>
+</tr>
+<tr>
+<td>/usr/share/doc/</td>
+<td>基本的软件使用手册保存位置</td>
+</tr>
+<tr>
+<td>/usr/share/man/</td>
+<td>帮助文件保存位置</td>
+</tr>
+</tbody>
+</table>
+<h5 id="1-查询是否安装"><a href="#1-查询是否安装" class="headerlink" title="1. 查询是否安装"></a>1. 查询是否安装</h5><ul>
+<li>rpm -q 包名<br>#查询包是否安装<br>-q（query）：查询</li>
+<li>rpm -qa<br>#查询所有已经安装的rpm包<br>-a（all）：所有<h5 id="2-查询软件包详细信息"><a href="#2-查询软件包详细信息" class="headerlink" title="2. 查询软件包详细信息"></a>2. 查询软件包详细信息</h5></li>
+<li>rpm -qi 包名<br>-i（information）：查询软件信息<br>-p（package）：查询未安装包信息<h5 id="3-查询系统文件属于哪个包"><a href="#3-查询系统文件属于哪个包" class="headerlink" title="3. 查询系统文件属于哪个包"></a>3. 查询系统文件属于哪个包</h5></li>
+<li>rpm -qf 系统文件名<br>-f（file）：查询系统文件属于哪个软件包<h5 id="4-查询软件包的依赖性"><a href="#4-查询软件包的依赖性" class="headerlink" title="4. 查询软件包的依赖性"></a>4. 查询软件包的依赖性</h5></li>
+<li>rpm -qR 包名<br>-R（requires）：查询软件包的依赖性<br>-p（package）：查询未安装包信息<h4 id="RPM包校验"><a href="#RPM包校验" class="headerlink" title="RPM包校验"></a>RPM包校验</h4></li>
+<li>rpm -V 包名<br>-V（verify）：校验指定RPM包中的文件</li>
+</ul>
+<p>验证内容中的8个信息的具体内容如下：</p>
+<ul>
+<li>S：文件大小是否改变</li>
+<li>M：文件的类型或文件的权限（rwx）是否被改变</li>
+<li>5：文件MD5校验和是否改变（可以看成文件内容是否改变）</li>
+<li>D：设备的主从代码是否改变</li>
+<li>L：文件路径是否改变</li>
+<li>U：文件的属主（所有者）是否改变</li>
+<li>G：文件的属组是否改变</li>
+<li>T：文件的修改时间是否改变</li>
+</ul>
+<p>文件类型：</p>
+<ul>
+<li>c（config file）：配置文件</li>
+<li>d（documentation）：普通文档</li>
+<li>g（ghost file）：“鬼”文件，很少见，该文件不应该被这个RPM包包含</li>
+<li>L（license file）：授权文件</li>
+<li>r（read me）：描述文件<h4 id="RPM包中文件提取"><a href="#RPM包中文件提取" class="headerlink" title="RPM包中文件提取"></a>RPM包中文件提取</h4></li>
+<li>rpm2cpio 包全名 | cpio -idv .文件绝对路径<br>-rpm2cpio<br>#将rpm包转换为cpio格式的命令<br>-cpio<br>#是一个标准工具，它用于创建软件档案文件和从档案文件中提取文件</li>
+<li>cpio &lt; [文件|设备]<br>-i：copy-in模式，还原<br>-d：还原时自动新建目录<br>-v：显示还原过程<h3 id="yum"><a href="#yum" class="headerlink" title="yum"></a>yum</h3><h4 id="yum源文件"><a href="#yum源文件" class="headerlink" title="yum源文件"></a>yum源文件</h4></li>
+<li>vim /etc/yum.repos.d/CentOS-Base.repo<br>-[base]：容器名称，一定要放在[]中<br>-name：容器说明，可以自己随便写<br>-mirrorlist：镜像站点，可以注释掉<br>-baseurl：yum原服务器的地址。默认是CentOS官方的yum源服务器，可以使用，可以改成阿里云等yum源地址<br>-enable：此容器是否生效，如果不写或写成enable=1都是生效，enable=0就是不生效<br>-gpgcheck：如果是1是指RPM的数字证书生效，如果是0则不生效<br>-gpgkey：数字证书的公钥文件保存位置。不用修改<h4 id="将yum源修改为光盘"><a href="#将yum源修改为光盘" class="headerlink" title="将yum源修改为光盘"></a>将yum源修改为光盘</h4><h5 id="1-挂载光盘"><a href="#1-挂载光盘" class="headerlink" title="1. 挂载光盘"></a>1. 挂载光盘</h5></li>
+<li>mkdir /mnt/cdrom<br>#建立挂载点</li>
+<li>mount /dev/cdrom /mnt/cdrom/<br>#挂载光盘<h5 id="2-使网络yum源失效"><a href="#2-使网络yum源失效" class="headerlink" title="2. 使网络yum源失效"></a>2. 使网络yum源失效</h5></li>
+<li>cd /etc/yum.repos.d/<br>#进入yum源目录</li>
+<li>mv CentOS-Base.repo CentOS-Base.repo.bak<br>#修改yum源文件后缀名，使其失效<h5 id="3-使光盘yum源生效"><a href="#3-使光盘yum源生效" class="headerlink" title="3. 使光盘yum源生效"></a>3. 使光盘yum源生效</h5></li>
+<li>vim CentOS-Media.repo<br><img src="/passages/Linux/SoftwareManage/软件安装/1.png" alt="5749a8b1f4603a1e27cf387d18dc7b82.png"></li>
+</ul>
+<h4 id="常用yum命令"><a href="#常用yum命令" class="headerlink" title="常用yum命令"></a>常用yum命令</h4><p>1）查询</p>
+<ul>
+<li>yum list<br>#查询所有可用软件包列表</li>
+<li>yum search 关键字<br>#搜索服务器上所有和关键字相关的包<br>2）安装</li>
+<li>yum -y install 包名<br>-install：安装<br>-y：自动回答yes<br>3）升级</li>
+<li>yum -y update 包名<br>-update：升级<br>-y：自动回答yes<br>4）卸载</li>
+<li>yum -y remove 包名<br>-remove：卸载<br>-y：自动回答yes<br><strong><em>服务器使用最小化安装，用什么软件安装什么，尽量不卸载</em></strong><h4 id="yum软件组管理命令"><a href="#yum软件组管理命令" class="headerlink" title="yum软件组管理命令"></a>yum软件组管理命令</h4></li>
+<li>yum grouplist<br>#列出所有可用的软件组名</li>
+<li>yum groupinstall 软件组名<br>#安装指定软件组，组名可以由grouplist查询出来</li>
+<li>yum groupremove 软件组名<br>#卸载指定软件组<h3 id="源码包"><a href="#源码包" class="headerlink" title="源码包"></a>源码包</h3><h4 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h4></li>
+<li>安装前的区别：概念上的区别</li>
+<li>安装后的区别：安装位置不同<h4 id="源码包安装位置"><a href="#源码包安装位置" class="headerlink" title="源码包安装位置"></a>源码包安装位置</h4></li>
+<li>安装在指定位置当中，一般是<br>/usr/local/软件名/<h4 id="安装位置不同带来的影响"><a href="#安装位置不同带来的影响" class="headerlink" title="安装位置不同带来的影响"></a>安装位置不同带来的影响</h4></li>
+<li>RPM包安装的服务可以使用系统服务管理命令（service）来管理，例如RPM包安装的apache的启动方法是：<br>/etc/rc.d/init.d/httpd start<br>service httpd start</li>
+<li>而源码包安装的服务则不能被服务管理命令管理，因为没有安装到默认路径中。所以只能用绝对路径进行服务的管理，如：<br>/usr/local/apache2/bin/apachectl start<h4 id="安装源码包"><a href="#安装源码包" class="headerlink" title="安装源码包"></a>安装源码包</h4><h5 id="1-安装准备"><a href="#1-安装准备" class="headerlink" title="1. 安装准备"></a>1. 安装准备</h5></li>
+<li>安装C语言编译器</li>
+<li>下载源码包<h5 id="2-安装注意事项"><a href="#2-安装注意事项" class="headerlink" title="2. 安装注意事项"></a>2. 安装注意事项</h5></li>
+<li>源代码保存位置：/usr/local/src/</li>
+<li>软件安装位置：/usr/local/</li>
+<li>如何确定安装过程报错：<br>-安装过程停止<br>-并出现error、warning或no的提示<h5 id="3-源码包安装过程"><a href="#3-源码包安装过程" class="headerlink" title="3. 源码包安装过程"></a>3. 源码包安装过程</h5></li>
+<li>下载源码包</li>
+<li>解压缩下载的源码包</li>
+<li>进入解压缩目录</li>
+<li>./configure 软件配置与检查<br>-定义需要的功能选项<br>-检测系统环境是否符合安装要求<br>-把定义好的功能选项和检测系统环境的信息都写入Makefile文件，用于后续的编辑</li>
+<li>make 编译<br>-make clean</li>
+<li>make install 编译安装<h5 id="4-源码包的卸载"><a href="#4-源码包的卸载" class="headerlink" title="4. 源码包的卸载"></a>4. 源码包的卸载</h5></li>
+<li>不需要卸载命令，直接删除安装目录即可。<h3 id="脚本安装"><a href="#脚本安装" class="headerlink" title="脚本安装"></a>脚本安装</h3><h4 id="centos-sh脚本分析"><a href="#centos-sh脚本分析" class="headerlink" title="centos.sh脚本分析"></a>centos.sh脚本分析</h4></li>
+<li>所谓的一键安装包，实际上还是安装的源码包和RPM包，只是把安装过程写成了脚本，便于初学者安装。</li>
+<li>优点：简单、快速、方便</li>
+<li>缺点：<br>-不能定义安装软件的版本<br>-不能定义所需要的软件功能<br>-源码包的优势丧失<h4 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h4></li>
+<li>保证yum源正常使用 </li>
+<li>关闭SELinux和防火墙<h4 id="安装步骤参考lnmp-org"><a href="#安装步骤参考lnmp-org" class="headerlink" title="安装步骤参考lnmp.org"></a>安装步骤参考lnmp.org</h4></li>
+</ul>
+    </div>
+  </div>
+  
+  
+  
+    <div class="social-share" style="margin-top: -2rem" data-wechat-qrcode-title="<p>微信扫一扫</p>" data-wechat-qrcode-helper="<p>微信右上角, 扫一扫分享</p>" data-sites="qzone, qq, weibo, wechat, douban, google, facebook, twitter">
+  <span style="color: #6b7487; font-size: 1.4rem;">分享到: </span>
+</div>
+<script src="https://cdn.bootcss.com/social-share.js/1.0.16/js/social-share.min.js" async></script>
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/Linux/">
+              #Linux
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/passages/Linux/SoftwareManage/软件包分类/" target="_self">软件包分类</a>
+      </div>
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/passages/Linux/BasicAuthority/Linux文件权限的设定/" target="_self">Linux文件权限的设定</a>
+        <i class="iconfont icon-next"></i>
+      </div>
+    
+  </nav>
+
+  
+    <a href="#comment" class="comment-anchor"></a>
+<div class="comment-title"><i class="iconfont icon-footprint"></i> 留下足迹 <i class="iconfont icon-footprint"></i></div>
+<div id="vcomments"></div>
+
+<script defer>
+  if( true ) {
+    let path = getRealPath()
+    new Valine({
+      el: "#vcomments",
+      appId: "7yRJzPxAfIe55F1Ys78YB80g-gzGzoHsz",
+      appKey: "yeNNzLbX5vRVkyfdTgkdbFRg",
+      notify: false,
+      verify: false,
+      avatar: "robohash",
+      placeholder: "正确填写邮箱, 才能及时收到回复哦♪(^∇^*)",
+      path
+    });
+  }
+</script>
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("7yRJzPxAfIe55F1Ys78YB80g-gzGzoHsz", "yeNNzLbX5vRVkyfdTgkdbFRg");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+      <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2019, 1, 4).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+      <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+    </div>
+
+    
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+    
+
+    <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+    
+  </body>
+
+</html>

@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com">
+  
+  
+  
+  <title>系统定时任务 | Kwin的学习博客</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Linux,系统管理,Linux,">
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n' , 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+    <meta name="description" content="Kwin的学习经历整理。">
+  
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+
+  
+    <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+    <link href="https://cdn.bootcss.com/social-share.js/1.0.16/css/share.min.css" rel="stylesheet">
+  
+  
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+  
+  
+    <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+  <body>
+
+    
+
+    <div id="app">
+
+      <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Kwin.xyz</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a href="/" target="_self">
+              主页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a href="/archives/" target="_self">
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a href="/categories/" target="_self">
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a href="/tags/" target="_self">
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a href="/about/" target="_self">
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else="">抓到我</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a href="https://github.com/Kwin1113" target="_blank">
+                    Github
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>系统定时任务</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2019-02-04
+    </span>
+    
+      <span>
+        分类 : 
+          <a href="/categories/Linux/">
+            Linux
+          </a>
+      </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="系统定时任务"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <!-- 文章的正式内容 -->
+<h2 id="系统定时任务"><a href="#系统定时任务" class="headerlink" title="系统定时任务"></a>系统定时任务</h2><ul>
+<li>at一次性定时任务</li>
+<li>crontab循环定时任务</li>
+<li>系统的crontab设置</li>
+<li>anacron配置</li>
+</ul>
+<h3 id="at一次执行系统定时任务"><a href="#at一次执行系统定时任务" class="headerlink" title="at一次执行系统定时任务"></a>at一次执行系统定时任务</h3><h4 id="1-确定at安装"><a href="#1-确定at安装" class="headerlink" title="1. 确定at安装"></a>1. 确定at安装</h4><ul>
+<li>chkconfig –list | grep atd<br>#at服务是否安装</li>
+<li>service atd start<br>#at服务的启动<h4 id="2-at的访问控制"><a href="#2-at的访问控制" class="headerlink" title="2. at的访问控制"></a>2. at的访问控制</h4></li>
+<li>如果系统中有/etc/at.allow文件，那么只有写入/etc/at.allow文件（白名单）中的用户可以使用at命令（/etc/at.deny文件会被忽略）</li>
+<li>如果系统中没有/etc/at.allow文件，只有/etc/at.deny文件，那么写入/etc/at.deny文件（黑名单）中的用户不能使用at命令。对root不起作用。</li>
+<li>如果系统中这两个文件都不存在，那么只有root用户可以使用at命令<h4 id="3-at命令"><a href="#3-at命令" class="headerlink" title="3. at命令"></a>3. at命令</h4></li>
+<li>at [选项] 时间</li>
+<li>选项：<br>&emsp;&emsp;-m：当at工作完成后，无论是否命令有输出，都用email通知执行at命令的用户<br>&emsp;&emsp;-c 工作号：显示该at工作的实际内容</li>
+<li><p>时间：<br>&emsp;&emsp;-HH:MM   &emsp;&emsp; &emsp;&emsp; &emsp;&emsp; &emsp;&emsp; &emsp;&emsp; &emsp;&emsp; &emsp;&emsp; &emsp;&emsp; &emsp;&emsp;&emsp;&emsp;&emsp;例如：02：30<br>&emsp;&emsp;-HH:MM YYYY-MM-DD  &emsp;&emsp;  &emsp;&emsp; &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;    &emsp;&emsp; &emsp;&emsp;  例如：02：30 2013-07-25<br>&emsp;&emsp;-HH:MM[am|pm] [month] [date]    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; &emsp;&emsp;例如：02：30 July 25<br>&emsp;&emsp;-HH:MM[am|pm] + [minutes|hours|days|weeks]  &emsp;&emsp; 例如：now + 5 minutes</p>
+</li>
+<li><p>eg.</p>
+</li>
+<li>at 02：00 2013-07-25<br>#在指定的时间重启<br>at&gt; /bin/sync<br>at&gt; /sbin/shutdown -r now<h4 id="其他at管理命令"><a href="#其他at管理命令" class="headerlink" title="其他at管理命令"></a>其他at管理命令</h4></li>
+<li><p>atq<br>#查询当前服务器上的at工作</p>
+</li>
+<li><p>atrm [工作号]<br>#删除指定的at任务</p>
+</li>
+</ul>
+<h3 id="crontab系统定时任务"><a href="#crontab系统定时任务" class="headerlink" title="crontab系统定时任务"></a>crontab系统定时任务</h3><h4 id="crond服务管理与访问控制"><a href="#crond服务管理与访问控制" class="headerlink" title="crond服务管理与访问控制"></a>crond服务管理与访问控制</h4><ul>
+<li>service crond restart</li>
+<li>chkconfig crond on<h5 id="访问控制"><a href="#访问控制" class="headerlink" title="访问控制"></a>访问控制</h5></li>
+<li>如果系统中有/etc/cron.allow文件，那么只有写入/etc/cron.allow文件（白名单）中的用户可以使用crontab命令（/etc/cron.deny文件会被忽略）</li>
+<li>如果系统中没有/etc/cron.allow文件，只有/etc/cron.deny文件，那么写入/etc/cron.deny文件（黑名单）中的用户不能使用crontab命令。<h4 id="用户的crontab设置"><a href="#用户的crontab设置" class="headerlink" title="用户的crontab设置"></a>用户的crontab设置</h4></li>
+<li>crontab [选项]</li>
+<li>选项：<br>&emsp;&emsp;-e：编辑crontab定时任务<br>&emsp;&emsp;-l：查询crontab任务<br>&emsp;&emsp;-r：删除当前用户所有的crontab任务</li>
+<li>crontab -e<br>#进入crontab编辑界面。会打开vim编辑你的工作。</li>
+<li>/<em> </em> <em> </em> * 执行的任务</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>含义</th>
+<th>范围</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第一个“*”</td>
+<td>一小时当中的第几分钟</td>
+<td>0-59</td>
+</tr>
+<tr>
+<td>第二个“*”</td>
+<td>一天当中的第几小时</td>
+<td>0-23</td>
+</tr>
+<tr>
+<td>第三个“*”</td>
+<td>一个月当中的第几天</td>
+<td>1-31</td>
+</tr>
+<tr>
+<td>第四个“*”</td>
+<td>一年当中的低级月</td>
+<td>1-12</td>
+</tr>
+<tr>
+<td>第五个“*”</td>
+<td>一周当中的星期几</td>
+<td>0-7（0和7都代表星期日）</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>特殊符号</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>*</td>
+<td>代表任何时间。比如第一个“*”就代表一小时中每分钟都执行一次的意思</td>
+</tr>
+<tr>
+<td>，</td>
+<td>代表不连续的时间。比如“0 8，12，16 <em> </em> * 命令”，就代表在每天的8点0分，12点0分，16点0分都执行一次命令</td>
+</tr>
+<tr>
+<td>-</td>
+<td>代表连续的时间范围。比如“0 5 <em> </em> 1-6 命令”，代表在周一到周六的凌晨5点0分执行命令</td>
+</tr>
+<tr>
+<td>*/n</td>
+<td>代表每隔多久执行一次。比如“<em>/10 </em> <em> </em> * 命令”，代表每隔10分钟就执行一遍命令</td>
+</tr>
+</tbody>
+</table>
+<h4 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h4><ul>
+<li><p>crontab -l<br>#查看root用户的crontab任务</p>
+</li>
+<li><p>crontab -r<br>#删除root用户所有的定时任务</p>
+<h4 id="crontab注意事项"><a href="#crontab注意事项" class="headerlink" title="crontab注意事项"></a>crontab注意事项</h4></li>
+<li>六个选项都不能为空，必须填写。如果不确定使用“*”代表</li>
+<li>crontab定时任务，最小有效时间是分钟，最大时间范围是年。像2018年某时执行，3点30分30秒这样的事件都不能识别。</li>
+<li>在定义时间时，日期和星期最好不要在一条定时任务中出现，因为它们都是以天作为单位，非常容易让管理员混乱。</li>
+<li>在定时任务中，不管是直接写命令，还是在脚本中写命令，最好都是用绝对路径。<h5 id="系统的定时任务"><a href="#系统的定时任务" class="headerlink" title="系统的定时任务"></a>系统的定时任务</h5></li>
+<li>“crontab -e”是每个用户执行的命令，也就是说不同的用户身份可以执行自己的定时任务。可是有些定时任务需要系统执行，这是我们就需要编辑/etc/crontab这个配置文件了<h6 id="CentOS-5-中的配置文件"><a href="#CentOS-5-中的配置文件" class="headerlink" title="CentOS 5 中的配置文件"></a>CentOS 5 中的配置文件</h6><img src="/passages/Linux/SysManage/系统定时任务/1.png" alt="ac725cf92516ee6636a0f0aae05bb084.png"><h6 id="CentOS-6-中的配置文件"><a href="#CentOS-6-中的配置文件" class="headerlink" title="CentOS 6 中的配置文件"></a>CentOS 6 中的配置文件</h6><img src="/passages/Linux/SysManage/系统定时任务/2.png" alt="a777221f4a6d078b11d9e2f3e6a91f7a.png"></li>
+</ul>
+<h5 id="执行系统的定时任务的方法"><a href="#执行系统的定时任务的方法" class="headerlink" title="执行系统的定时任务的方法"></a>执行系统的定时任务的方法</h5><ul>
+<li>手工执行定时任务</li>
+<li>系统定时任务<br>&emsp;&emsp;-第一种是把需要定时执行的脚本复制到/etc/cron.{daily,weekly,monthly}目录中的任意一个<br>&emsp;&emsp;-第二种是修改/etc/crontab配置文件</li>
+</ul>
+<h3 id="anacron系统定时任务"><a href="#anacron系统定时任务" class="headerlink" title="anacron系统定时任务"></a>anacron系统定时任务</h3><h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><ul>
+<li>anacron是用来保证在系统关机的时候错过的定时任务，可以在系统开机之后再执行。<h4 id="anacron检测周期"><a href="#anacron检测周期" class="headerlink" title="anacron检测周期"></a>anacron检测周期</h4></li>
+<li>anncron会使用一天，一周，一个月作为检测周期</li>
+<li>在系统的/var/spool/anacron/目录中存在cron.{daily,weekly,monthly}文件，用于记录上次执行cron的时间</li>
+<li>和当前时间做比较，如果两个时间的插值超过了anacron的指定时间差值，证明有cron任务被漏执行。<h4 id="CentOS-6-x-的区别"><a href="#CentOS-6-x-的区别" class="headerlink" title="CentOS 6.x 的区别"></a>CentOS 6.x 的区别</h4></li>
+<li>在老的CentOS版本中，/etc/cron.{daily,weekly,monthly}这些目录既会被cron调用，也会被anacron调用，容易重复执行。</li>
+<li>在CentOS 6.x中则只会被anacron调用，避免了重复执行。</li>
+<li>在CentOS 6.x中，anacron不再是服务，而是系统命令。<h4 id="anacron配置文件"><a href="#anacron配置文件" class="headerlink" title="anacron配置文件"></a>anacron配置文件</h4></li>
+<li>vi /etc/anacrontab<br>-RANDOM_DELAY=45<br>#最大随机延迟<br>-START_HOURS_RANGE=3-22<br>-1 5 cron.daily nice run-parts /etc/cron.daily<br>-7 25 cron.weekly nice run-parts /etc/cron.weekly<br>-@monthly 45 cron.monthly nice run-parts /etc/cron.monthly<br>#天数 强制延迟（分） 工作名称 实际执行的命令<h4 id="cron-daily工作来说明执行过程"><a href="#cron-daily工作来说明执行过程" class="headerlink" title="cron.daily工作来说明执行过程"></a>cron.daily工作来说明执行过程</h4></li>
+<li>首先读取/var/spool/anacron/cron.daily中的上一次anacron执行的时间</li>
+<li>和当前时间比较，如果两个时间的插值超过一天，就执行cron.daily工作</li>
+<li>执行这个工作只能在03：00-22：00之间</li>
+<li>执行工作时强制延迟时间为5分钟，再随机延迟0-45分钟时间</li>
+<li>使用nice命令指定默认优先级，使用run-parts脚本执行/etc/cron.daily目录中的所有可执行文件</li>
+</ul>
+    </div>
+  </div>
+  
+  
+  
+    <div class="social-share" style="margin-top: -2rem" data-wechat-qrcode-title="<p>微信扫一扫</p>" data-wechat-qrcode-helper="<p>微信右上角, 扫一扫分享</p>" data-sites="qzone, qq, weibo, wechat, douban, google, facebook, twitter">
+  <span style="color: #6b7487; font-size: 1.4rem;">分享到: </span>
+</div>
+<script src="https://cdn.bootcss.com/social-share.js/1.0.16/js/social-share.min.js" async></script>
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/Linux/">
+              #Linux
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/passages/Linux/SysManage/系统资源查看/" target="_self">系统资源查看</a>
+      </div>
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/passages/Linux/NetworkManage/网络基础/" target="_self">网络基础</a>
+        <i class="iconfont icon-next"></i>
+      </div>
+    
+  </nav>
+
+  
+    <a href="#comment" class="comment-anchor"></a>
+<div class="comment-title"><i class="iconfont icon-footprint"></i> 留下足迹 <i class="iconfont icon-footprint"></i></div>
+<div id="vcomments"></div>
+
+<script defer>
+  if( true ) {
+    let path = getRealPath()
+    new Valine({
+      el: "#vcomments",
+      appId: "7yRJzPxAfIe55F1Ys78YB80g-gzGzoHsz",
+      appKey: "yeNNzLbX5vRVkyfdTgkdbFRg",
+      notify: false,
+      verify: false,
+      avatar: "robohash",
+      placeholder: "正确填写邮箱, 才能及时收到回复哦♪(^∇^*)",
+      path
+    });
+  }
+</script>
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("7yRJzPxAfIe55F1Ys78YB80g-gzGzoHsz", "yeNNzLbX5vRVkyfdTgkdbFRg");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+      <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2019, 1, 4).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+      <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+    </div>
+
+    
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+    
+
+    <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+    
+  </body>
+
+</html>

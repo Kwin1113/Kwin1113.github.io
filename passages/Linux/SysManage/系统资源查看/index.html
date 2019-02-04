@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com">
+  
+  
+  
+  <title>系统资源查看 | Kwin的学习博客</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Linux,系统管理,Linux,">
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n' , 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+    <meta name="description" content="Kwin的学习经历整理。">
+  
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+
+  
+    <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+    <link href="https://cdn.bootcss.com/social-share.js/1.0.16/css/share.min.css" rel="stylesheet">
+  
+  
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+  
+  
+    <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+  <body>
+
+    
+
+    <div id="app">
+
+      <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Kwin.xyz</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a href="/" target="_self">
+              主页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a href="/archives/" target="_self">
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a href="/categories/" target="_self">
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a href="/tags/" target="_self">
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a href="/about/" target="_self">
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else="">抓到我</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a href="https://github.com/Kwin1113" target="_blank">
+                    Github
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>系统资源查看</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2019-02-04
+    </span>
+    
+      <span>
+        分类 : 
+          <a href="/categories/Linux/">
+            Linux
+          </a>
+      </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="系统资源查看"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <!-- 文章的正式内容 -->
+<h3 id="1-vmstat命令监控系统资源"><a href="#1-vmstat命令监控系统资源" class="headerlink" title="1. vmstat命令监控系统资源"></a>1. vmstat命令监控系统资源</h3><ul>
+<li>vmstat [刷新延时 刷新次数]</li>
+<li>eg.<br>&emsp;&emsp;- vmstat 1 3</li>
+<li>procs：进程信息字段：<br>&emsp;&emsp;- r：等待运行的进程数，数量越大，系统越繁忙。<br>&emsp;&emsp;- b：不可被唤醒的进程数量，数量越大，系统越繁忙。</li>
+<li>memory：内存信息字段：<br>&emsp;&emsp;- swpd：虚拟内存的使用情况，单位KB<br>&emsp;&emsp;- fress：空闲的内存容量，单位KB<br>&emsp;&emsp;- buff：缓冲的内存容量，单位KB<br>&emsp;&emsp;-cache：缓存的内存容量，单位KB<h4 id="缓存和缓冲的区别"><a href="#缓存和缓冲的区别" class="headerlink" title="缓存和缓冲的区别"></a>缓存和缓冲的区别</h4>简单来说缓存（cache）是用来加速数据从硬盘中”读取“的，而缓冲（buffer）是用来加速数据“写入”硬盘的。</li>
+<li>swap：交换分区的信息字段：<br>&emsp;&emsp;- si：从磁盘中交换到内存中数据的数量，单位KB<br>&emsp;&emsp;- so：从内存中交换到磁盘中数据的数量，单位KB。此两个数越大，证明数据需要经常在磁盘和内存之间交换，系统性能越差。</li>
+<li>io：磁盘读写信息字段：<br>&emsp;&emsp;- bi：从块设备读入数据的总量，单位是块。<br>&emsp;&emsp;- bo：写到块设备的数据的总量，单位是块。此两个数越大，代表系统的I/O越繁忙。</li>
+<li>system：系统信息字段<br>&emsp;&emsp;- in：每秒被中断的进程次数。<br>&emsp;&emsp;- cs：每秒钟进行的事件切换次数。此两个数越大，代表系统与接口设备的通信非常繁忙。</li>
+<li>CPU：CPU信息字段：<br>&emsp;&emsp;- us：非内核进程消耗CPU运算时间的百分比。<br>&emsp;&emsp;- sy：内核进程消耗CPU运算时间的百分比。<br>&emsp;&emsp;- id：空闲CPU的百分比。<br>&emsp;&emsp;- wa：等待I/O所消耗的CPU百分比。<br>&emsp;&emsp;- st：被虚拟机所盗用的CPU百分比。</li>
+</ul>
+<h3 id="2-dmesg开机时内核检测信息"><a href="#2-dmesg开机时内核检测信息" class="headerlink" title="2. dmesg开机时内核检测信息"></a>2. dmesg开机时内核检测信息</h3><ul>
+<li>dmesg</li>
+<li>dmesg | grep CPU</li>
+</ul>
+<h3 id="3-free命令查看内存使用状态"><a href="#3-free命令查看内存使用状态" class="headerlink" title="3. free命令查看内存使用状态"></a>3. free命令查看内存使用状态</h3><ul>
+<li>free [-b|-k|-m|-g]</li>
+<li>选项：<br>&emsp;&emsp;-b：以字节为单位显示<br>&emsp;&emsp;-k：以KB为单位显示，默认就是以KB为单位显示<br>&emsp;&emsp;-m：以MB为单位显示<br>&emsp;&emsp;-g：以GB为单位显示</li>
+<li>第一行：total是总内存数，used是已经使用的内存数，free是空闲的内存数，shared是多个进程共享的内存总数，buffers是缓冲内存数，cached是缓存内存数。默认单位是KB。</li>
+<li>第二行：-/buffers/cache的内存数，相当于第一行的used-buffers-cached。+/buffers/cache的内存数，相当于第一行的free+buffers+cached。</li>
+<li>第三行：total是swap的总数；used是已经使用的swap数，free是空闲的swap数。默认单位是KB</li>
+</ul>
+<h3 id="4-查看CPU信息"><a href="#4-查看CPU信息" class="headerlink" title="4. 查看CPU信息"></a>4. 查看CPU信息</h3><ul>
+<li>cat /proc/cpuinfo</li>
+</ul>
+<h3 id="5-uptime命令"><a href="#5-uptime命令" class="headerlink" title="5. uptime命令"></a>5. uptime命令</h3><ul>
+<li>uptime</li>
+<li>#显示系统的启动时间和平均负载，也就是top命令的第一行。w命令也可以看到这个数据。</li>
+</ul>
+<h3 id="6-查看系统与内核相关信息"><a href="#6-查看系统与内核相关信息" class="headerlink" title="6. 查看系统与内核相关信息"></a>6. 查看系统与内核相关信息</h3><ul>
+<li>uname [选项]</li>
+<li>选项：<br>&emsp;&emsp;-a：查看系统所有相关信息；<br>&emsp;&emsp;-r：查看内核版本；<br>&emsp;&emsp;-s：查看内核名称。<h4 id="判断当前系统的位数"><a href="#判断当前系统的位数" class="headerlink" title="判断当前系统的位数"></a>判断当前系统的位数</h4></li>
+<li>file /bin/ls<h4 id="查询当前Linux系统的发行版本"><a href="#查询当前Linux系统的发行版本" class="headerlink" title="查询当前Linux系统的发行版本"></a>查询当前Linux系统的发行版本</h4></li>
+<li>lsb_release -a</li>
+</ul>
+<h3 id="7-列出进程打开或使用的文件信息"><a href="#7-列出进程打开或使用的文件信息" class="headerlink" title="7. 列出进程打开或使用的文件信息"></a>7. 列出进程打开或使用的文件信息</h3><ul>
+<li>lsof [选项]<br>#列出进程调用或打开的文件的信息</li>
+<li>选项：<br>&emsp;&emsp;-c 字符串：只列出以字符串开头的进程打开的文件<br>&emsp;&emsp;-u 用户名：只列出某个用户的进程打开的文件<br>&emsp;&emsp;-p pid：列出某个PID进程打开的文件</li>
+<li>lsof | more<br>&emsp;&emsp;#查询系统中所有进程调用的文件</li>
+<li>lsof /sbin/init<br>&emsp;&emsp;#查询某个文件被哪个进程调用</li>
+<li>lsof -c httpd<br>&emsp;&emsp;#查看httpd进程调用了哪些文件</li>
+<li>lsof -u root<br>&emsp;&emsp;#按照用户名，查询某用户的进程调用的文件名</li>
+</ul>
+    </div>
+  </div>
+  
+  
+  
+    <div class="social-share" style="margin-top: -2rem" data-wechat-qrcode-title="<p>微信扫一扫</p>" data-wechat-qrcode-helper="<p>微信右上角, 扫一扫分享</p>" data-sites="qzone, qq, weibo, wechat, douban, google, facebook, twitter">
+  <span style="color: #6b7487; font-size: 1.4rem;">分享到: </span>
+</div>
+<script src="https://cdn.bootcss.com/social-share.js/1.0.16/js/social-share.min.js" async></script>
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/Linux/">
+              #Linux
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/passages/Linux/SysManage/工作管理/" target="_self">工作管理</a>
+      </div>
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/passages/Linux/SysManage/系统定时任务/" target="_self">系统定时任务</a>
+        <i class="iconfont icon-next"></i>
+      </div>
+    
+  </nav>
+
+  
+    <a href="#comment" class="comment-anchor"></a>
+<div class="comment-title"><i class="iconfont icon-footprint"></i> 留下足迹 <i class="iconfont icon-footprint"></i></div>
+<div id="vcomments"></div>
+
+<script defer>
+  if( true ) {
+    let path = getRealPath()
+    new Valine({
+      el: "#vcomments",
+      appId: "7yRJzPxAfIe55F1Ys78YB80g-gzGzoHsz",
+      appKey: "yeNNzLbX5vRVkyfdTgkdbFRg",
+      notify: false,
+      verify: false,
+      avatar: "robohash",
+      placeholder: "正确填写邮箱, 才能及时收到回复哦♪(^∇^*)",
+      path
+    });
+  }
+</script>
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("7yRJzPxAfIe55F1Ys78YB80g-gzGzoHsz", "yeNNzLbX5vRVkyfdTgkdbFRg");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+      <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2019, 1, 4).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+      <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+    </div>
+
+    
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+    
+
+    <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+    
+  </body>
+
+</html>

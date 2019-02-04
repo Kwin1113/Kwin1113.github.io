@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com">
+  
+  
+  
+  <title>消息中间件 | Kwin的学习博客</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="Tools,Java消息中间件,Java消息中间件,">
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n' , 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+    <meta name="description" content="Kwin的学习经历整理。">
+  
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+
+  
+    <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+    <link href="https://cdn.bootcss.com/social-share.js/1.0.16/css/share.min.css" rel="stylesheet">
+  
+  
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+  
+  
+    <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+  <body>
+
+    
+
+    <div id="app">
+
+      <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Kwin.xyz</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a href="/" target="_self">
+              主页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a href="/archives/" target="_self">
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a href="/categories/" target="_self">
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a href="/tags/" target="_self">
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a href="/about/" target="_self">
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="">
+          
+            <a href="javascript:void(0);" v-else="">抓到我</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a href="https://github.com/Kwin1113" target="_blank">
+                    Github
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>消息中间件</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2019-02-04
+    </span>
+    
+      <span>
+        分类 : 
+          <a href="/categories/Tools/">
+            Tools
+          </a>
+      </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="消息中间件"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <!-- 文章的正式内容 -->
+<h3 id="通过服务调用让其他系统感知事件发生"><a href="#通过服务调用让其他系统感知事件发生" class="headerlink" title="通过服务调用让其他系统感知事件发生"></a>通过服务调用让其他系统感知事件发生</h3><p><img src="/passages/Tools/Java消息中间件/消息中间件/1.png" alt="d16c36aa170784f0f50e43602f61fe63.png"></p>
+<h3 id="通过消息中间件解耦服务调用"><a href="#通过消息中间件解耦服务调用" class="headerlink" title="通过消息中间件解耦服务调用"></a>通过消息中间件解耦服务调用</h3><p><img src="/passages/Tools/Java消息中间件/消息中间件/2.png" alt="d8720e890bc366d740bf396b2d7dcc9c.png"></p>
+<h3 id="消息中间件带来的好处"><a href="#消息中间件带来的好处" class="headerlink" title="消息中间件带来的好处"></a>消息中间件带来的好处</h3><ul>
+<li>解耦</li>
+<li>异步</li>
+<li>横向扩展</li>
+<li>安全可靠</li>
+<li>顺序保证</li>
+<li>……<h3 id="什么是中间件？"><a href="#什么是中间件？" class="headerlink" title="什么是中间件？"></a>什么是中间件？</h3>&emsp;&emsp;非底层操作系统软件，非业务应用软件，不是直接给最终用户使用的，不能直接给用户带来价值的软件统称为中间件。<br>&emsp;&emsp;关注于数据的发送和接受，利用高效可靠的异步消息传递机制集成分布式系统。<h3 id="消息中间件图示"><a href="#消息中间件图示" class="headerlink" title="消息中间件图示"></a>消息中间件图示</h3><img src="/passages/Tools/Java消息中间件/消息中间件/3.png" alt="9414ad5f25996497ae099b2293c2d533.png"><h3 id="什么是JMS？"><a href="#什么是JMS？" class="headerlink" title="什么是JMS？"></a>什么是JMS？</h3>&emsp;&emsp;Java消息服务（Java Message Service）即JMS，是一个Java平台中关于面向消息中间件的API，用于在两个应用程序之间，或分布式系统中发送消息，进行异步通信。<h3 id="什么是AMQP？"><a href="#什么是AMQP？" class="headerlink" title="什么是AMQP？"></a>什么是AMQP？</h3>&emsp;&emsp;AMQP（Advanced Message Queuing Protocol）是一个提供统一消息服务的应用层标准协议，基于此协议的客户端与消息中间件可传递消息，并不受客户端/中间件不同产品，不同开发语言等条件的限制。<h3 id="JMS与AMQP对比"><a href="#JMS与AMQP对比" class="headerlink" title="JMS与AMQP对比"></a>JMS与AMQP对比</h3></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>JMS规范</th>
+<th>AMQP协议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>定义</td>
+<td>Java API</td>
+<td>Wire-protocol</td>
+</tr>
+<tr>
+<td>跨语言</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>消息模型</td>
+<td>提供两种消息模型：p2p，pub/sub</td>
+<td>提供了五种消息模型：direct，fanout，topic，headers，system</td>
+</tr>
+<tr>
+<td>消息类型</td>
+<td>TextMessage，MapMessage，BytesMessage，StreamMessage，ObjectMessage，Message</td>
+<td>byte[]</td>
+</tr>
+<tr>
+<td>综合评价</td>
+<td>JMS定义了Java API层面的标准；在Java体系中，多个client均可以通过JMS进行交互，不需要应用修改代码，但是其对跨平台的支持较差</td>
+<td>AMQP的主要特征是面向消息、队列、路由（包括点对点和发布/订阅）、可靠性、安全</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ActiveMQ特性"><a href="#ActiveMQ特性" class="headerlink" title="ActiveMQ特性"></a>ActiveMQ特性</h3><ul>
+<li>多种语言和协议编写客户端。语言：Java、C、C++、C#、Ruby、Perl、Python、PHP。应用协议：OpenWire、Stomp REST、WS Notification、XMPP、AMQP</li>
+<li>完全支持JMS1.1和J2EE1.4规范（持久化，XA消息，事务）</li>
+<li>虚拟主题、组合目的、镜像队列<h3 id="RabbitMQ特性"><a href="#RabbitMQ特性" class="headerlink" title="RabbitMQ特性"></a>RabbitMQ特性</h3></li>
+<li>支持多种客户端，如：Python、Ruby、.NET、Java、JMS、C、PHP、ACtionScript等</li>
+<li>AMQP的完整实现（vhost、Exchange、Bindind、RoutingKey等）</li>
+<li>事务支持/发布确认</li>
+<li>消息持久化<h3 id="Kafka特性"><a href="#Kafka特性" class="headerlink" title="Kafka特性"></a>Kafka特性</h3></li>
+<li>通过O(1)的磁盘数据结构提供消息的持久化，这种结构对于即使数以TB的消息存储也能够保持长时间的稳定性能。</li>
+<li>高吞吐量：即使是非常普通的硬件Kafka也可以支持每秒数百万的消息。</li>
+<li>Partition、Consumer Group<h3 id="综合评价"><a href="#综合评价" class="headerlink" title="综合评价"></a>综合评价</h3></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>ActiveMQ</th>
+<th>RabbitMQ</th>
+<th>Kafka</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>跨语言</td>
+<td>支持（Java优先）</td>
+<td>语言无关</td>
+<td>支持（Java优先）</td>
+</tr>
+<tr>
+<td>支持协议</td>
+<td>OpenWire、Stomp、XMPP、AMQP</td>
+<td>AMQP</td>
+<td></td>
+</tr>
+<tr>
+<td>优点</td>
+<td>遵循JMS规范，安装部署方便</td>
+<td>继承Erlang天生的并发性，最初用于金融行业，稳定性，安全性有保障</td>
+<td>依赖zk，可动态扩展节点，高性能、高吞吐量、无限扩容，消息可指定追溯</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>根据其他用户反馈，会莫名丢失消息。目前重心在下代产品apolle上，目前社区不活跃，对5.X维护较少</td>
+<td>Erlang语言难度较大，不支持动态扩展</td>
+<td>严格的顺序机制，不支持消息优先级，不支持标准的消息协议，不利于平台迁移</td>
+</tr>
+<tr>
+<td>综合评价</td>
+<td>适合中小企业级消息应用场景，不适合上千个队列的应用场景</td>
+<td>适合对稳定性要求高的企业级应用</td>
+<td>一般应用在大数据日志处理或对实时性（少量延迟），可靠性（少量丢数据）要求稍低的场景使用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="JMS相关概念"><a href="#JMS相关概念" class="headerlink" title="JMS相关概念"></a>JMS相关概念</h3><ul>
+<li>提供者：实现JMS规范的消息中间件服务器</li>
+<li>客户端：发送或接收消息的应用程序</li>
+<li>生产者/发布者：创建并发送消息的客户端</li>
+<li>消费者/订阅者：接收并处理消息的客户端</li>
+<li>消息：应用程序之间传递的数据内容</li>
+<li>消息模式：在客户端之间传递消息的方式，JMS中定义了主题和队列两种模式<h3 id="队列模式"><a href="#队列模式" class="headerlink" title="队列模式"></a>队列模式</h3></li>
+<li>客户端包括生产者和消费者</li>
+<li>队列中的消息只能被一个消费者消费</li>
+<li>消费者可以随时消费队列中的消息<br><img src="/passages/Tools/Java消息中间件/消息中间件/4.png" alt="ba643d8175c6b473a2d47f80a73eae31.png"><h3 id="主题模式"><a href="#主题模式" class="headerlink" title="主题模式"></a>主题模式</h3></li>
+<li>客户端包括发布者和订阅者</li>
+<li>主题中的消息被订阅者消费</li>
+<li>消费者不能消费订阅之前就发送到主题中的消息<br><img src="/passages/Tools/Java消息中间件/消息中间件/5.png" alt="cefca0acc2301d7c09c04ea765c84b30.png"><h3 id="JMS规范"><a href="#JMS规范" class="headerlink" title="JMS规范"></a>JMS规范</h3><h4 id="JMS编码接口"><a href="#JMS编码接口" class="headerlink" title="JMS编码接口"></a>JMS编码接口</h4></li>
+<li>ConnectionFactory：用于创建连接到消息中间件的连接工厂</li>
+<li>Connection：代表了应用程序和消息服务器之间的通信链路</li>
+<li>Destination：指消息发布和接收的地点，包括队列或主题</li>
+<li>Session：表示一个单线程的上下文，用于发送和接收消息</li>
+<li>MessageConsumer：由会话创建，用于接收发送到目标的消息</li>
+<li>MessageProducer：由会话创建，用于发送消息到目标</li>
+<li>Message：是在消费者和生产者之间传送的对象，消息头，一组消息属性，一个消息体<h4 id="JMS编码接口之间的关系"><a href="#JMS编码接口之间的关系" class="headerlink" title="JMS编码接口之间的关系"></a>JMS编码接口之间的关系</h4><img src="/passages/Tools/Java消息中间件/消息中间件/6.png" alt="5dbe950047d2e7e9fe55ba976668abea.png"></li>
+</ul>
+    </div>
+  </div>
+  
+  
+  
+    <div class="social-share" style="margin-top: -2rem" data-wechat-qrcode-title="<p>微信扫一扫</p>" data-wechat-qrcode-helper="<p>微信右上角, 扫一扫分享</p>" data-sites="qzone, qq, weibo, wechat, douban, google, facebook, twitter">
+  <span style="color: #6b7487; font-size: 1.4rem;">分享到: </span>
+</div>
+<script src="https://cdn.bootcss.com/social-share.js/1.0.16/js/social-share.min.js" async></script>
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/Java消息中间件/">
+              #Java消息中间件
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/passages/Linux/Shell/Shell基础/" target="_self">Shell基础</a>
+      </div>
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/passages/Tools/Java消息中间件/ActiveMQ/" target="_self">ActiveMQ</a>
+        <i class="iconfont icon-next"></i>
+      </div>
+    
+  </nav>
+
+  
+    <a href="#comment" class="comment-anchor"></a>
+<div class="comment-title"><i class="iconfont icon-footprint"></i> 留下足迹 <i class="iconfont icon-footprint"></i></div>
+<div id="vcomments"></div>
+
+<script defer>
+  if( true ) {
+    let path = getRealPath()
+    new Valine({
+      el: "#vcomments",
+      appId: "7yRJzPxAfIe55F1Ys78YB80g-gzGzoHsz",
+      appKey: "yeNNzLbX5vRVkyfdTgkdbFRg",
+      notify: false,
+      verify: false,
+      avatar: "robohash",
+      placeholder: "正确填写邮箱, 才能及时收到回复哦♪(^∇^*)",
+      path
+    });
+  }
+</script>
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("7yRJzPxAfIe55F1Ys78YB80g-gzGzoHsz", "yeNNzLbX5vRVkyfdTgkdbFRg");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+      <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2019, 1, 4).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+      <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+    </div>
+
+    
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+    
+
+    <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+    
+  </body>
+
+</html>
