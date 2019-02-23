@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://kwin1113.github.io/about/index.html</loc>
+    
+    <lastmod>2019-02-23T07:50:56.781Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://kwin1113.github.io/passages/Frames/MyBatis/%E4%BB%80%E4%B9%88%E6%98%AFMyBatis/</loc>
     
     <lastmod>2019-02-05T08:25:49.882Z</lastmod>
@@ -82,13 +89,6 @@
     <loc>http://kwin1113.github.io/links/index.html</loc>
     
     <lastmod>2019-02-05T08:19:14.156Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://kwin1113.github.io/about/index.html</loc>
-    
-    <lastmod>2019-02-05T08:19:14.155Z</lastmod>
     
   </url>
   
