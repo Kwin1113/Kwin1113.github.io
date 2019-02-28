@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>Redis Sentinel开发运维常见问题 | Kwin的学习博客</title>
+  <meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis Sentinel开发运维常见问题">
+<meta property="og:url" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/index.html">
+<meta property="og:site_name" content="Kwin的学习博客">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/1.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/2.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/3.png">
+<meta property="og:updated_time" content="2019-02-28T03:05:29.646Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis Sentinel开发运维常见问题">
+<meta name="twitter:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/1.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://kwin1113.github.io/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/index.html">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+    <link href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.3.5/dist/jquery.fancybox.min.css" rel="stylesheet">
+  
+  
+</head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/Kwin1113" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Kwin Jing</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Java后端开发</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Hangzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Kwin1113" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/5371472697" target="_blank" title="Weibo" data-toggle="tooltip" data-placement="top"><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>一只努力的后端狗。</p>
+            </div>
+            <p>
+                您是Kwin见到的第<span id="busuanzi_value_site_uv"></span>位访客，欢迎您！
+            </p>
+        </div>
+    </div>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/">Frames</a><span class="category-list-count">33</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/MyBatis/">MyBatis</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/SSM/">SSM</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/SpringBoot/">SpringBoot</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/SpringMVC/">SpringMVC</a><span class="category-list-count">10</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">27</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Shell-持更/">Shell(持更...)</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/常用命令/">常用命令</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/服务管理/">服务管理</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/权限管理之基本权限/">权限管理之基本权限</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/权限管理之特殊权限/">权限管理之特殊权限</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/系统管理/">系统管理</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/网络管理/">网络管理</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/软件管理/">软件管理</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/">Tools</a><span class="category-list-count">22</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Java消息中间件/">Java消息中间件</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Junit4/">Junit4</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Maven/">Maven</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Servlet/">Servlet</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/ZooKeeper/">ZooKeeper</a><span class="category-list-count">2</span></li></ul></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java消息中间件/">Java消息中间件</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Junit4/">Junit4</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">27</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/">Maven</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/">Redis</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSM/">SSM</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Servlet/">Servlet</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/">SpringBoot</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a><span class="tag-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Java消息中间件/" style="font-size: 13.33px;">Java消息中间件</a> <a href="/tags/Junit4/" style="font-size: 13px;">Junit4</a> <a href="/tags/Linux/" style="font-size: 14px;">Linux</a> <a href="/tags/Maven/" style="font-size: 13px;">Maven</a> <a href="/tags/MyBatis/" style="font-size: 13.5px;">MyBatis</a> <a href="/tags/Redis/" style="font-size: 13.83px;">Redis</a> <a href="/tags/SSM/" style="font-size: 13.33px;">SSM</a> <a href="/tags/Servlet/" style="font-size: 13.17px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 13.5px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 13.17px;">SpringBoot</a> <a href="/tags/SpringMVC/" style="font-size: 13.67px;">SpringMVC</a> <a href="/tags/ZooKeeper/" style="font-size: 13.17px;">ZooKeeper</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">82</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/Redis云平台Cachecloud/" class="title">Redis云平台Cachecloud</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:13:27.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/缓存的使用与设计/" class="title">缓存的使用与设计</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:11:51.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/RedisCluster开发运维常见问题/" class="title">RedisCluster开发运维常见问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:10:47.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/Redis-Cluster/" class="title">Redis Cluster</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:06:05.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/" class="title">Redis Sentinel开发运维常见问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:04:43.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Tools/Redis/Redis-Sentinel开发运维常见问题" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Redis Sentinel开发运维常见问题
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/" class="article-date">
+	  <time datetime="2019-02-28T03:04:43.000Z" itemprop="datePublished">2019-02-28</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Tools/">Tools</a>►<a class="article-category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/Redis/">Redis</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 504(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 2(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <!-- 文章的摘要内容 -->
+<a id="more"></a>
+<!-- 文章的正式内容 -->
+<h3 id="常见开发运维问题"><a href="#常见开发运维问题" class="headerlink" title="常见开发运维问题"></a>常见开发运维问题</h3><ul>
+<li>节点运维</li>
+<li>高可用读写分离</li>
+</ul>
+<h4 id="节点运维"><a href="#节点运维" class="headerlink" title="节点运维"></a>节点运维</h4><h5 id="节点上线和下线"><a href="#节点上线和下线" class="headerlink" title="节点上线和下线"></a>节点上线和下线</h5><ul>
+<li>主节点</li>
+<li>从节点</li>
+<li>sentinel节点</li>
+</ul>
+<h5 id="节点下线"><a href="#节点下线" class="headerlink" title="节点下线"></a>节点下线</h5><p>机器下线：例如过保等情况<br>机器性能不足：例如CPU、内存、硬盘、网络等<br>节点自身故障：例如服务不稳定等</p>
+<p><strong>主节点：</strong><br>sentinel failover <mastername><br><img src="/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/1.png" alt="2d135bfe7d8509817883a7e61325dad2.png"><br><strong>从节点：</strong><br>临时下线还是永久下线，例如是否做一些清理工作，但是要考虑读写分离的情况。<br><strong>Sentinel节点：</strong><br>同上</mastername></p>
+<h5 id="节点上线"><a href="#节点上线" class="headerlink" title="节点上线"></a>节点上线</h5><p><strong>主节点：</strong><br>sentinel failover进行替换<br><strong>从节点：</strong><br>slaveof即可，sentinel节点可以感知<br><strong>sentinel节点:</strong><br>参考其他sentinel节点启动即可</p>
+<h4 id="高可用读写分离"><a href="#高可用读写分离" class="headerlink" title="高可用读写分离"></a>高可用读写分离</h4><h5 id="从节点的作用"><a href="#从节点的作用" class="headerlink" title="从节点的作用"></a>从节点的作用</h5><ol>
+<li>副本：高可用的基础</li>
+<li>扩展：读能力<br><img src="/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/2.png" alt="47dd3eb3706f6ecf7dba8321ab6193f1.png"><h5 id="三个“消息”"><a href="#三个“消息”" class="headerlink" title="三个“消息”"></a>三个“消息”</h5></li>
+</ol>
+<ul>
+<li>+switch-master：切换主节点（从节点晋升主节点）</li>
+<li>+convert-to-slave：切换从节点（原主节点降为从节点）</li>
+<li>+sdown：主观下线<br><img src="/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/3.png" alt="a444cd9c93be9b3a7594d80b3a041b1f.png"></li>
+</ul>
+<h3 id="Redis-Sentinel总结"><a href="#Redis-Sentinel总结" class="headerlink" title="Redis Sentinel总结"></a>Redis Sentinel总结</h3><ul>
+<li>Redis Sentinel是Redis的高可用实现方案：故障发现、故障自动转移、配置中心、客户端通知。</li>
+<li>Redis Sentinel从Redis2.8版本开始才正式生产可用，之前版本生产不可用。</li>
+<li>尽可能在不同物理机上部署Redis Sentinel所有节点。</li>
+<li>Redis Sentinel中的Sentinel节点个数应该为大于等于3且最好为奇数。</li>
+<li>Redis Sentinel中的数据节点与普通数据节点没有区别。</li>
+<li>客户端初始化时连接的是Sentinel节点集合，不再是具体的Redis节点，但Sentinel只是配置中心不是代理。</li>
+<li>Redis Sentinel通过三个定时任务实现了Sentinel节点对于主节点、从节点、其余Sentinel节点的监控。</li>
+<li>Redis Sentinel在对节点做失败判定时分为主观下线和客观下线。</li>
+<li>看懂Redis Sentinel故障转移日志对于Redis Sentinel以及问题排查非常有帮助。</li>
+<li>Redis Sentinel实现读写分离高可用可以依赖Sentinel节点的消息通知，获取Redis数据节点的状态变化。</li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://kwin1113.github.io/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/" title="Redis Sentinel开发运维常见问题" target="_blank" rel="external">http://kwin1113.github.io/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/Kwin1113" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/Kwin1113" target="_blank"><span class="text-dark">Kwin Jing</span><small class="ml-1x">Java后端开发</small></a></h3>
+        <div>过的好也不好。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/passages/Tools/Redis/Redis-Cluster/" title="Redis Cluster"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/passages/Tools/Redis/Redis-Sentinel/" title="Redis Sentinel"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Kwin1113" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/5371472697" target="_blank" title="Weibo" data-toggle="tooltip" data-placement="top"><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2019 Kwin Jing
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.3.5/dist/jquery.fancybox.min.js"></script>
+  <script>
+  //利用 FancyBox 实现点击图片放大
+  $(document).ready(function() {
+    $('article img').not('[hidden]').not('.panel-body img').each(function() {
+      var $image = $(this);
+      var imageCaption = $image.attr('alt');
+      var $imageWrapLink = $image.parent('a');
+      if ($imageWrapLink.length < 1) {
+        var src = this.getAttribute('src');
+        var idx = src.lastIndexOf('?');
+        if (idx != -1) {
+          src = src.substring(0, idx);
+        }
+        $imageWrapLink = $image.wrap('<a href="' + src + '"></a>').parent('a');
+      }
+      $imageWrapLink.attr('data-fancybox', 'images');
+      if (imageCaption) {
+        $imageWrapLink.attr('data-caption', imageCaption);
+      }
+    });
+    $().fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+    });
+  });
+  </script>
+
+
+
+
+
+</body>
+</html>

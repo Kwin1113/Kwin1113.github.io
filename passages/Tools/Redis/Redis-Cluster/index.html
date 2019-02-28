@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>Redis Cluster | Kwin的学习博客</title>
+  <meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis Cluster">
+<meta property="og:url" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/index.html">
+<meta property="og:site_name" content="Kwin的学习博客">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/1.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/2.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/3.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/4.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/5.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/6.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/7.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/8.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/9.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/10.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/11.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/12.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/13.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/14.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/15.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/16.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/17.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/18.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/19.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/20.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/21.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/22.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/23.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/24.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/25.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/26.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/27.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/28.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/29.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/30.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/31.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/32.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/33.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/34.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/35.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/36.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/37.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/38.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/39.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/40.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/41.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/42.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/43.png">
+<meta property="og:updated_time" content="2019-02-28T03:10:26.787Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis Cluster">
+<meta name="twitter:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/1.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/index.html">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+    <link href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.3.5/dist/jquery.fancybox.min.css" rel="stylesheet">
+  
+  
+</head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/Kwin1113" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Kwin Jing</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Java后端开发</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Hangzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Kwin1113" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/5371472697" target="_blank" title="Weibo" data-toggle="tooltip" data-placement="top"><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>一只努力的后端狗。</p>
+            </div>
+            <p>
+                您是Kwin见到的第<span id="busuanzi_value_site_uv"></span>位访客，欢迎您！
+            </p>
+        </div>
+    </div>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/">Frames</a><span class="category-list-count">33</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/MyBatis/">MyBatis</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/SSM/">SSM</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/SpringBoot/">SpringBoot</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/SpringMVC/">SpringMVC</a><span class="category-list-count">10</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">27</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Shell-持更/">Shell(持更...)</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/常用命令/">常用命令</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/服务管理/">服务管理</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/权限管理之基本权限/">权限管理之基本权限</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/权限管理之特殊权限/">权限管理之特殊权限</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/系统管理/">系统管理</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/网络管理/">网络管理</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/软件管理/">软件管理</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/">Tools</a><span class="category-list-count">22</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Java消息中间件/">Java消息中间件</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Junit4/">Junit4</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Maven/">Maven</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Servlet/">Servlet</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/ZooKeeper/">ZooKeeper</a><span class="category-list-count">2</span></li></ul></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java消息中间件/">Java消息中间件</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Junit4/">Junit4</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">27</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/">Maven</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/">Redis</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSM/">SSM</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Servlet/">Servlet</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/">SpringBoot</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a><span class="tag-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Java消息中间件/" style="font-size: 13.33px;">Java消息中间件</a> <a href="/tags/Junit4/" style="font-size: 13px;">Junit4</a> <a href="/tags/Linux/" style="font-size: 14px;">Linux</a> <a href="/tags/Maven/" style="font-size: 13px;">Maven</a> <a href="/tags/MyBatis/" style="font-size: 13.5px;">MyBatis</a> <a href="/tags/Redis/" style="font-size: 13.83px;">Redis</a> <a href="/tags/SSM/" style="font-size: 13.33px;">SSM</a> <a href="/tags/Servlet/" style="font-size: 13.17px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 13.5px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 13.17px;">SpringBoot</a> <a href="/tags/SpringMVC/" style="font-size: 13.67px;">SpringMVC</a> <a href="/tags/ZooKeeper/" style="font-size: 13.17px;">ZooKeeper</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">82</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/Redis云平台Cachecloud/" class="title">Redis云平台Cachecloud</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:13:27.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/缓存的使用与设计/" class="title">缓存的使用与设计</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:11:51.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/RedisCluster开发运维常见问题/" class="title">RedisCluster开发运维常见问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:10:47.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/Redis-Cluster/" class="title">Redis Cluster</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:06:05.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/" class="title">Redis Sentinel开发运维常见问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:04:43.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Tools/Redis/Redis-Cluster" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Redis Cluster
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/passages/Tools/Redis/Redis-Cluster/" class="article-date">
+	  <time datetime="2019-02-28T03:06:05.000Z" itemprop="datePublished">2019-02-28</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Tools/">Tools</a>►<a class="article-category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/Redis/">Redis</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/passages/Tools/Redis/Redis-Cluster/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1,930(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 8(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <!-- 文章的摘要内容 -->
+<a id="more"></a>
+<!-- 文章的正式内容 -->
+<h3 id="Redis-Cluster"><a href="#Redis-Cluster" class="headerlink" title="Redis Cluster"></a>Redis Cluster</h3><ul>
+<li>呼唤集群</li>
+<li>数据分布</li>
+<li>搭建集群</li>
+<li>集群伸缩</li>
+<li>客户端路由</li>
+<li>集群原理</li>
+<li>故障转移</li>
+<li>开发运维常见问题</li>
+</ul>
+<h4 id="呼唤集群"><a href="#呼唤集群" class="headerlink" title="呼唤集群"></a>呼唤集群</h4><p><strong>1. 并发量</strong><br><img src="/passages/Tools/Redis/Redis-Cluster/1.png" alt="4c53f1ccbcf54eeaa510986cf0618f01.png"><br><strong>2. 数据量</strong><br><img src="/passages/Tools/Redis/Redis-Cluster/2.png" alt="4be4230484669d458bd3196d762f1dec.png"><br><strong>3. 网络流量</strong></p>
+<h5 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h5><p>分布式：简单的认为加机器</p>
+<h5 id="集群：规模化需求"><a href="#集群：规模化需求" class="headerlink" title="集群：规模化需求"></a>集群：规模化需求</h5><ol>
+<li>并发量：OPS</li>
+<li>数据量：”大数据”</li>
+</ol>
+<h4 id="数据分布"><a href="#数据分布" class="headerlink" title="数据分布"></a>数据分布</h4><h5 id="分布式数据库-数据分区"><a href="#分布式数据库-数据分区" class="headerlink" title="分布式数据库-数据分区"></a>分布式数据库-数据分区</h5><p><img src="/passages/Tools/Redis/Redis-Cluster/3.png" alt="ec271f7332b0840126bcf408154e58ee.png"></p>
+<h5 id="顺序分区和哈希分区"><a href="#顺序分区和哈希分区" class="headerlink" title="顺序分区和哈希分区"></a>顺序分区和哈希分区</h5><ul>
+<li><p>顺序分布<br><img src="/passages/Tools/Redis/Redis-Cluster/4.png" alt="26cdd825a4847d74dbddbbf8a5fa29dc.png"></p>
+</li>
+<li><p>哈希分布（例如节点取模）<br><img src="/passages/Tools/Redis/Redis-Cluster/5.png" alt="5a6b6f382161e01d9141f8949fdb6081.png"></p>
+</li>
+</ul>
+<h5 id="数据分布对比"><a href="#数据分布对比" class="headerlink" title="数据分布对比"></a>数据分布对比</h5><table>
+<thead>
+<tr>
+<th>分布方式</th>
+<th>特点</th>
+<th>典型产品</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>哈希分布</td>
+<td>数据分散度高、键值分布业务无关、无法顺序访问、支持批量操作</td>
+<td>一致性哈希Memcache、Redis Cluster、其他缓存产品</td>
+</tr>
+<tr>
+<td>顺序分布</td>
+<td>数据分散度易倾斜、键值业务相关、可顺序访问、支持批量操作</td>
+<td>Big Table、HBase</td>
+</tr>
+</tbody>
+</table>
+<h5 id="哈希分布"><a href="#哈希分布" class="headerlink" title="哈希分布"></a>哈希分布</h5><ul>
+<li>节点取余分区</li>
+<li>一致性哈希分区</li>
+<li>虚拟槽分区</li>
+</ul>
+<h6 id="节点取余分区：hash-key-nodes"><a href="#节点取余分区：hash-key-nodes" class="headerlink" title="节点取余分区：hash(key)%nodes"></a>节点取余分区：hash(key)%nodes</h6><p><img src="/passages/Tools/Redis/Redis-Cluster/6.png" alt="3c971b0ea421c5bcf6de3019e083ec1f.png"></p>
+<ul>
+<li>多倍扩容<br><img src="/passages/Tools/Redis/Redis-Cluster/7.png" alt="7e40b1dc4d18e1a4c93aece969d07f83.png"></li>
+<li>客户端分片：哈希+取余</li>
+<li>节点伸缩：数据节点关系变化，导致数据迁移</li>
+<li>迁移数量和添加节点数量有关：建议翻倍扩容</li>
+</ul>
+<h6 id="一致性哈希"><a href="#一致性哈希" class="headerlink" title="一致性哈希"></a>一致性哈希</h6><p><img src="/passages/Tools/Redis/Redis-Cluster/8.png" alt="0184808c809945b27a22cf3f71d55dfa.png"></p>
+<ul>
+<li>扩容<br><img src="/passages/Tools/Redis/Redis-Cluster/9.png" alt="99dfddd38e209c0715b3b7b02b015fc5.png"><br><img src="/passages/Tools/Redis/Redis-Cluster/10.png" alt="483882f7e012729b7cd38d3497fbc075.png"></li>
+<li>客户端分片：哈希+顺时针（优化取余）</li>
+<li>节点伸缩：只影响邻近节点，但是还是有数据迁移</li>
+<li>翻倍伸缩：保证最小迁移数据和负载均衡</li>
+</ul>
+<h6 id="虚拟槽分区"><a href="#虚拟槽分区" class="headerlink" title="虚拟槽分区"></a>虚拟槽分区</h6><ul>
+<li>预设虚拟槽：每个槽映射一个数据子集，一般比节点数大</li>
+<li>良好的哈希函数：例如CRC16</li>
+<li>服务端管理节点、槽、数据：例如Redis Cluster</li>
+</ul>
+<p><img src="/passages/Tools/Redis/Redis-Cluster/11.png" alt="f11e258b82e7b93119db245139673ad6.png"></p>
+<h4 id="搭建集群-基本架构"><a href="#搭建集群-基本架构" class="headerlink" title="搭建集群-基本架构"></a>搭建集群-基本架构</h4><h5 id="单机架构"><a href="#单机架构" class="headerlink" title="单机架构"></a>单机架构</h5><p><img src="/passages/Tools/Redis/Redis-Cluster/12.png" alt="7cea22b8436e6b97c3af6970c49b9a8b.png"></p>
+<h5 id="分布式架构"><a href="#分布式架构" class="headerlink" title="分布式架构"></a>分布式架构</h5><p><img src="/passages/Tools/Redis/Redis-Cluster/13.png" alt="77f477c5198406c962c9157ef1b04201.png"></p>
+<h5 id="Redis-Cluster架构"><a href="#Redis-Cluster架构" class="headerlink" title="Redis Cluster架构"></a>Redis Cluster架构</h5><ol>
+<li>节点</li>
+<li>meet</li>
+<li>指派槽</li>
+<li>复制</li>
+</ol>
+<h6 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h6><p>cluster-enabled yes</p>
+<h6 id="meet"><a href="#meet" class="headerlink" title="meet"></a>meet</h6><p><img src="/passages/Tools/Redis/Redis-Cluster/14.png" alt="40b9c1438bc5c1af38eba3defee243b8.png"><br>所有节点共享消息</p>
+<h6 id="指派槽"><a href="#指派槽" class="headerlink" title="指派槽"></a>指派槽</h6><p><img src="/passages/Tools/Redis/Redis-Cluster/15.png" alt="3fcd3f76bf756d7f3f26a83d39489853.png"><br><img src="/passages/Tools/Redis/Redis-Cluster/16.png" alt="f207190c4b92c65143b1f9060cb588d1.png"><br><img src="/passages/Tools/Redis/Redis-Cluster/17.png" alt="3b2333adba337aa7f62de8a658fc54dc.png"></p>
+<h6 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h6><ol>
+<li>复制</li>
+<li>高可用</li>
+<li>分片</li>
+</ol>
+<h5 id="Redis-Cluster安装"><a href="#Redis-Cluster安装" class="headerlink" title="Redis Cluster安装"></a>Redis Cluster安装</h5><ol>
+<li>原生命令安装</li>
+<li>官方工具安装</li>
+</ol>
+<h5 id="原生命令安装-理解架构"><a href="#原生命令安装-理解架构" class="headerlink" title="原生命令安装-理解架构"></a>原生命令安装-理解架构</h5><ol>
+<li>配置开启节点<br><img src="/passages/Tools/Redis/Redis-Cluster/18.png" alt="46bc9667ffe4340debe83e3dab6a3bfa.png"></li>
+<li><p>meet<br><strong><em>cluster meet ip port</em></strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h 127.0.0.1 -p 7000 cluster meet 127.0.0.1 7001</span><br><span class="line">redis-cli -h 127.0.0.1 -p 7000 cluster meet 127.0.0.1 7002</span><br><span class="line">redis-cli -h 127.0.0.1 -p 7000 cluster meet 127.0.0.1 7003</span><br><span class="line">redis-cli -h 127.0.0.1 -p 7000 cluster meet 127.0.0.1 7004</span><br><span class="line">redis-cli -h 127.0.0.1 -p 7000 cluster meet 127.0.0.1 7005</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Cluster节点主要配置<br><img src="/passages/Tools/Redis/Redis-Cluster/19.png" alt="6eb486f5073ba04e27170b995a964e4c.png"></p>
+</li>
+<li><p>指派槽<br><strong><em>cluster addslots slot [slot …]</em></strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h 127.0.0.1 -p 7000 cluster addslots &#123;0..5461&#125;</span><br><span class="line">redis-cli -h 127.0.0.1 -p 7001 cluster addslots &#123;5462..10922&#125;</span><br><span class="line">redis-cli -h 127.0.0.1 -p 7002 cluster addslots &#123;10923..16383&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置主从<br><strong><em>cluster replicate node-id</em></strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h 127.0.0.1 -p 7003 cluster replicate $&#123;node-id-7000&#125;</span><br><span class="line">redis-cli -h 127.0.0.1 -p 7004 cluster replicate $&#123;node-id-7001&#125;</span><br><span class="line">redis-cli -h 127.0.0.1 -p 7005 cluster replicate $&#123;node-id-7002&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h5 id="官方工具Ruby安装"><a href="#官方工具Ruby安装" class="headerlink" title="官方工具Ruby安装"></a>官方工具Ruby安装</h5><ol>
+<li>下载、编译、安装Ruby</li>
+<li>安装rubygem redis</li>
+<li>安装redis-trib.rb</li>
+</ol>
+<h5 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h5><p><strong><em>使用redis-trib.rb create 或者 redis-cli create 命令</em></strong><br><strong><em>可视化部署</em></strong></p>
+<h4 id="集群伸缩"><a href="#集群伸缩" class="headerlink" title="集群伸缩"></a>集群伸缩</h4><ul>
+<li>伸缩原理</li>
+<li>扩容集群</li>
+<li>缩容集群</li>
+</ul>
+<h5 id="伸缩原理"><a href="#伸缩原理" class="headerlink" title="伸缩原理"></a>伸缩原理</h5><p><img src="/passages/Tools/Redis/Redis-Cluster/20.png" alt="2b9b1ab91dde67c5e6225e7c762730ed.png"><br><img src="/passages/Tools/Redis/Redis-Cluster/21.png" alt="e69b5d77ba31351907bbb4fd4ddfa0e9.png"><br><strong><em>集群伸缩=槽和数据在节点之间的移动</em></strong></p>
+<h5 id="扩容集群"><a href="#扩容集群" class="headerlink" title="扩容集群"></a>扩容集群</h5><ul>
+<li>准备新节点</li>
+<li>加入集群</li>
+<li>迁移槽和数据</li>
+</ul>
+<h6 id="准备新节点"><a href="#准备新节点" class="headerlink" title="准备新节点"></a>准备新节点</h6><p><strong><em>新节点：</em></strong></p>
+<ul>
+<li>集群模式</li>
+<li>配置和其他节点同意</li>
+<li>启动后是孤儿节点<br><img src="/passages/Tools/Redis/Redis-Cluster/22.png" alt="6870c3b54484f8fac199bd97834055bb.png"><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">redis-server conf/redis-6385.conf</span><br><span class="line">redis-server conf/redis-6386.conf</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="加入集群"><a href="#加入集群" class="headerlink" title="加入集群"></a>加入集群</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379 &gt; cluster meet 127.0.0.1 6385</span><br><span class="line">127.0.0.1:6379 &gt; cluster meet 127.0.0.1 6386</span><br></pre></td></tr></table></figure>
+<p><img src="/passages/Tools/Redis/Redis-Cluster/23.png" alt="8bfbd164c3f45cd55cc976ea7e3d7fe5.png"><br><strong><em>作用</em></strong></p>
+<ul>
+<li>为他迁移槽和数据实现扩容</li>
+<li>作为从节点负责故障转移<br><strong><em>redis-trib.rb</em></strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">redis-trib.rb add-node new_host:new_port existing_hos:existing_port --slave --master-id &lt;arg&gt;</span><br><span class="line">redis-trib.rb add-node 127.0.0.1:7006 127.0.0.1:7000</span><br><span class="line">//建议使用redis-trib.rb能够避免新节点已经加入了其他集群，造成故障</span><br><span class="line">//新版本使用redis-cli --cluster add-node</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h6 id="迁移槽和数据"><a href="#迁移槽和数据" class="headerlink" title="迁移槽和数据"></a>迁移槽和数据</h6><ul>
+<li><p>槽迁移计划</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">//新版本使用redis-cli --cluster reshard</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>迁移数据</p>
+</li>
+<li>添加从节点</li>
+</ul>
+<ol>
+<li>槽迁移计划<br><img src="/passages/Tools/Redis/Redis-Cluster/24.png" alt="57e080461f9bd9653acd5e9e5b114fbf.png"></li>
+<li>迁移数据</li>
+<li>对目标节点发送：cluster setslot {slot} importing {sourceNodeId} 命令，让目标节点准备导入槽的数据。</li>
+<li>对源节点发送：cluster setslot {slot} migrating {targetNodeId} 命令，让源节点准备迁出槽的数据。</li>
+<li>源节点循环执行cluster getkeysinslot {slot} {count} 命令，每次获取count个属于槽的键。</li>
+<li>在源节点上执行migrate {targetIp} {targetPort} key 0 {timeout} 命令把指定key迁移。</li>
+<li>重复执行步骤3~4知道槽下所有的键数据迁移到目标节点。</li>
+<li>向集群内所有主节点发送cluster setslot {slot} node {targetNodeId} 命令，通知槽分配给目标节点。<br><img src="/passages/Tools/Redis/Redis-Cluster/25.png" alt="787e5aad38bbebf6c1160f252da0b217.png"></li>
+</ol>
+<h5 id="收缩集群"><a href="#收缩集群" class="headerlink" title="收缩集群"></a>收缩集群</h5><ol>
+<li>下线迁移槽</li>
+<li>忘记节点</li>
+<li>关闭节点</li>
+</ol>
+<p><img src="/passages/Tools/Redis/Redis-Cluster/26.png" alt="5e50a73ab51465553805ee587f8f1f7f.png"></p>
+<h6 id="下线槽"><a href="#下线槽" class="headerlink" title="下线槽"></a>下线槽</h6><p><img src="/passages/Tools/Redis/Redis-Cluster/27.png" alt="9a51944a3c2a9b8547b8e83bb31b024e.png"></p>
+<h6 id="忘记槽"><a href="#忘记槽" class="headerlink" title="忘记槽"></a>忘记槽</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">redis-cli &gt; cluster forget &#123;downNodeId&#125;</span><br><span class="line"></span><br><span class="line">del-node</span><br></pre></td></tr></table></figure>
+<p><img src="/passages/Tools/Redis/Redis-Cluster/28.png" alt="7510cdb477a9634e693f9268c0ee7600.png"></p>
+<h4 id="客户端路由"><a href="#客户端路由" class="headerlink" title="客户端路由"></a>客户端路由</h4><ul>
+<li>moved重定向</li>
+<li>ask重定向</li>
+<li>smart客户端</li>
+</ul>
+<h5 id="moved重定向"><a href="#moved重定向" class="headerlink" title="moved重定向"></a>moved重定向</h5><p><img src="/passages/Tools/Redis/Redis-Cluster/29.png" alt="67b02da18c72042945d3edec00c5a3fe.png"></p>
+<h6 id="槽命中"><a href="#槽命中" class="headerlink" title="槽命中"></a>槽命中</h6><p><img src="/passages/Tools/Redis/Redis-Cluster/30.png" alt="345f51553dcc8ccd8f9c96b01218b85b.png"></p>
+<h6 id="槽不命中：moved异常"><a href="#槽不命中：moved异常" class="headerlink" title="槽不命中：moved异常"></a>槽不命中：moved异常</h6><p><img src="/passages/Tools/Redis/Redis-Cluster/31.png" alt="85468a9c664a7b306a8cb57c63f5a81d.png"></p>
+<h5 id="ask重定向"><a href="#ask重定向" class="headerlink" title="ask重定向"></a>ask重定向</h5><p><img src="/passages/Tools/Redis/Redis-Cluster/32.png" alt="67971de02f266bbf1e0abe620d99b613.png"><br><img src="/passages/Tools/Redis/Redis-Cluster/33.png" alt="e8351e4f9651c35bd91b76ff3db9ca32.png"></p>
+<h5 id="moved和ask"><a href="#moved和ask" class="headerlink" title="moved和ask"></a>moved和ask</h5><ul>
+<li>两者都是客户端重定向</li>
+<li>moved：槽已经确定迁移</li>
+<li>ask：槽还在迁移中<h5 id="smart客户端"><a href="#smart客户端" class="headerlink" title="smart客户端"></a>smart客户端</h5></li>
+<li>smart客户端原理</li>
+<li>smart客户端使用：JedisCluster</li>
+</ul>
+<h6 id="smart客户端原理：追求性能"><a href="#smart客户端原理：追求性能" class="headerlink" title="smart客户端原理：追求性能"></a>smart客户端原理：追求性能</h6><ol>
+<li>从集群中选一个可运行节点，使用cluster slots初始化槽和节点映射。</li>
+<li>将cluster slots的结果映射到本地，为每个节点创建JedisPool。</li>
+<li>准备执行命令。</li>
+</ol>
+<p><strong><em>执行命令</em></strong><br><img src="/passages/Tools/Redis/Redis-Cluster/34.png" alt="09d50d6bfc47b244e31e2ebec0d94a11.png"></p>
+<h6 id="smart客户端使用：JedisCluster"><a href="#smart客户端使用：JedisCluster" class="headerlink" title="smart客户端使用：JedisCluster"></a>smart客户端使用：JedisCluster</h6><p><strong><em>JedisCluster基本使用</em></strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Set&lt;HostAndPort&gt; nodeList = <span class="keyword">new</span> HashSet&lt;HostAndPort&gt;();</span><br><span class="line">nodeList.add(<span class="keyword">new</span> HostAndPort(HOST1, PORT1));</span><br><span class="line">nodeList.add(<span class="keyword">new</span> HostAndPort(HOST2, PORT2));</span><br><span class="line">nodeList.add(<span class="keyword">new</span> HostAndPort(HOST3, PORT3));</span><br><span class="line">nodeList.add(<span class="keyword">new</span> HostAndPort(HOST4, PORT4));</span><br><span class="line">nodeList.add(<span class="keyword">new</span> HostAndPort(HOST5, PORT5));</span><br><span class="line">nodeList.add(<span class="keyword">new</span> HostAndPort(HOST6, PORT6));</span><br><span class="line">JedisCluster redisCluster = <span class="keyword">new</span> JedisCluster(nodeList, timeout, poolConfig);</span><br><span class="line">redisCluster.command...</span><br></pre></td></tr></table></figure></p>
+<p><strong>使用技巧</strong></p>
+<ol>
+<li>单例：内置了所有节点的连接池</li>
+<li>无需手动借还连接池</li>
+<li>合理设置commons-pool<br><strong><em>整合spring</em></strong><br><a href="https://blog.csdn.net/u010199866/article/details/80705797" target="_blank" rel="noopener">springBoot整合redisCluster(redis集群)模式</a><br>注意搭建集群时ip的配置，避免整合客户端时连接失败。<br><strong><em>多节点命令实现</em></strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String, JedisPool&gt; jedisPoolMap = jedisCluster.getClusterNodes();</span><br><span class="line">for (Entry&lt;String, JedisPool&gt; entry : jedisPoolMap.entrySet())&#123;</span><br><span class="line">    //获取每个节点的Jedis连接</span><br><span class="line">    Jedis jedis = entry.getValue().getResource();</span><br><span class="line">    //只删除主节点数据</span><br><span class="line">    if(!isMaster(jedis))&#123;</span><br><span class="line">        continue;</span><br><span class="line">    &#125;</span><br><span class="line">    //finally close</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><strong><em>批量命令实现</em></strong><br>mget mset 必须在一个槽上</p>
+<ul>
+<li>四种批量优化的方法</li>
+</ul>
+<ol>
+<li><p>串行mget<br><img src="/passages/Tools/Redis/Redis-Cluster/35.png" alt="8665d2b02476093bf46b133e0bd72b7c.png"></p>
+</li>
+<li><p>串行IO<br><img src="/passages/Tools/Redis/Redis-Cluster/36.png" alt="bb8c1707302803657c804c5dad42cf2d.png"></p>
+</li>
+<li><p>并行IO<br><img src="/passages/Tools/Redis/Redis-Cluster/37.png" alt="9238ec76455dc756c83673112b8d1711.png"></p>
+</li>
+<li><p>hash_tag<br><img src="/passages/Tools/Redis/Redis-Cluster/38.png" alt="d1fb2631aafff0c0e5ec6e6deca4cad9.png"></p>
+</li>
+</ol>
+<ul>
+<li>四种方案优缺点分析</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>优点</th>
+<th>缺点</th>
+<th>网络IO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>串行mget</td>
+<td>编程简单、少量keys满足需求</td>
+<td>大量keys请求延迟严重</td>
+<td>O(keys)</td>
+</tr>
+<tr>
+<td>串行IO</td>
+<td>编程简单、少量节点满足需求</td>
+<td>大量node延迟严重</td>
+<td>O(nodes)</td>
+</tr>
+<tr>
+<td>并行IO</td>
+<td>利用并行特性、延迟取决于最慢的节点</td>
+<td>编程复杂、超时定位问题难</td>
+<td>O(max_slow(node))</td>
+</tr>
+<tr>
+<td>hash_tag</td>
+<td>性能最高</td>
+<td>读写增加tag维护成本、tag分布易出现数据倾斜</td>
+<td>O(1)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="故障转移"><a href="#故障转移" class="headerlink" title="故障转移"></a>故障转移</h4><h5 id="故障发现"><a href="#故障发现" class="headerlink" title="故障发现"></a>故障发现</h5><ul>
+<li>通过ping/pong消息实现故障发现：不需要sentinel</li>
+<li>主观下线/客观下线<br><img src="/passages/Tools/Redis/Redis-Cluster/39.png" alt="c1170013554b6c412c5933afbd2ee10c.png"><br><img src="/passages/Tools/Redis/Redis-Cluster/40.png" alt="06658900bd791aeed9508206887d0b7a.png"></li>
+<li>尝试客观下线<br><img src="/passages/Tools/Redis/Redis-Cluster/41.png" alt="a4c428dc4c692a0f78d605dbc631e621.png"></li>
+</ul>
+<ol>
+<li>通知集群内所有节点标记故障节点为客观下线</li>
+<li>通知故障节点的从节点触发故障转移流程</li>
+</ol>
+<h5 id="故障恢复"><a href="#故障恢复" class="headerlink" title="故障恢复"></a>故障恢复</h5><ul>
+<li>资格检查</li>
+</ul>
+<ol>
+<li>每个从节点检查与故障主节点的断线时间</li>
+<li>超过cluster-node-timeout * cluster-slave-validity-factor取消资格</li>
+<li>cluster-slave-validity-factor：默认是10</li>
+</ol>
+<ul>
+<li><p>准备选举时间<br><img src="/passages/Tools/Redis/Redis-Cluster/42.png" alt="9d1680d94e31b8689c2d78d5f1ea0a14.png"></p>
+</li>
+<li><p>选举投票<br><img src="/passages/Tools/Redis/Redis-Cluster/43.png" alt="a769e29410b63a32b2395076ff22f77f.png"></p>
+</li>
+<li><p>替换主节点</p>
+</li>
+</ul>
+<ol>
+<li>当前从节点取消复制变为主节点。（slaveof no one）</li>
+<li>执行clusterDelSlot撤销故障主节点负责的槽，并执行clusterAddSlot把这些槽分配给自己。</li>
+<li>向集群广播自己的pong消息，表明已经替换了故障从节点。</li>
+</ol>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/" title="Redis Cluster" target="_blank" rel="external">http://kwin1113.github.io/passages/Tools/Redis/Redis-Cluster/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/Kwin1113" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/Kwin1113" target="_blank"><span class="text-dark">Kwin Jing</span><small class="ml-1x">Java后端开发</small></a></h3>
+        <div>过的好也不好。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/passages/Tools/Redis/RedisCluster开发运维常见问题/" title="RedisCluster开发运维常见问题"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/" title="Redis Sentinel开发运维常见问题"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Kwin1113" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/5371472697" target="_blank" title="Weibo" data-toggle="tooltip" data-placement="top"><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2019 Kwin Jing
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.3.5/dist/jquery.fancybox.min.js"></script>
+  <script>
+  //利用 FancyBox 实现点击图片放大
+  $(document).ready(function() {
+    $('article img').not('[hidden]').not('.panel-body img').each(function() {
+      var $image = $(this);
+      var imageCaption = $image.attr('alt');
+      var $imageWrapLink = $image.parent('a');
+      if ($imageWrapLink.length < 1) {
+        var src = this.getAttribute('src');
+        var idx = src.lastIndexOf('?');
+        if (idx != -1) {
+          src = src.substring(0, idx);
+        }
+        $imageWrapLink = $image.wrap('<a href="' + src + '"></a>').parent('a');
+      }
+      $imageWrapLink.attr('data-fancybox', 'images');
+      if (imageCaption) {
+        $imageWrapLink.attr('data-caption', imageCaption);
+      }
+    });
+    $().fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+    });
+  });
+  </script>
+
+
+
+
+
+</body>
+</html>

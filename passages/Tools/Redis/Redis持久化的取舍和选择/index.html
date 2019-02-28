@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000">
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top">
+  
+  
+  <title>Redis持久化的取舍和选择 | Kwin的学习博客</title>
+  <meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis持久化的取舍和选择">
+<meta property="og:url" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/index.html">
+<meta property="og:site_name" content="Kwin的学习博客">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/1.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/2.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/3.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/4.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/5.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/6.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/7.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/8.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/9.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/10.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/11.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/12.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/13.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/14.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/15.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/16.png">
+<meta property="og:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/17.png">
+<meta property="og:updated_time" content="2019-02-28T02:57:05.018Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis持久化的取舍和选择">
+<meta name="twitter:image" content="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/1.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/index.html">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+  
+  
+    <link href="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.3.5/dist/jquery.fancybox.min.css" rel="stylesheet">
+  
+  
+</head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/Kwin1113" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Kwin Jing</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">Java后端开发</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Hangzhou, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索">
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech="">
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope="" itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Kwin1113" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/5371472697" target="_blank" title="Weibo" data-toggle="tooltip" data-placement="top"><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope="" itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>一只努力的后端狗。</p>
+            </div>
+            <p>
+                您是Kwin见到的第<span id="busuanzi_value_site_uv"></span>位访客，欢迎您！
+            </p>
+        </div>
+    </div>
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/">Frames</a><span class="category-list-count">33</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/MyBatis/">MyBatis</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/SSM/">SSM</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/Spring/">Spring</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/SpringBoot/">SpringBoot</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Frames/SpringMVC/">SpringMVC</a><span class="category-list-count">10</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><span class="category-list-count">27</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Shell-持更/">Shell(持更...)</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/常用命令/">常用命令</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/服务管理/">服务管理</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/权限管理之基本权限/">权限管理之基本权限</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/权限管理之特殊权限/">权限管理之特殊权限</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/系统管理/">系统管理</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/网络管理/">网络管理</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/软件管理/">软件管理</a><span class="category-list-count">2</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/">Tools</a><span class="category-list-count">22</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Java消息中间件/">Java消息中间件</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Junit4/">Junit4</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Maven/">Maven</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a><span class="category-list-count">13</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/Servlet/">Servlet</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Tools/ZooKeeper/">ZooKeeper</a><span class="category-list-count">2</span></li></ul></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java消息中间件/">Java消息中间件</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Junit4/">Junit4</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a><span class="tag-list-count">27</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Maven/">Maven</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/">MyBatis</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/">Redis</a><span class="tag-list-count">13</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SSM/">SSM</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Servlet/">Servlet</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/">Spring</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/">SpringBoot</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringMVC/">SpringMVC</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/ZooKeeper/">ZooKeeper</a><span class="tag-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/Java消息中间件/" style="font-size: 13.33px;">Java消息中间件</a> <a href="/tags/Junit4/" style="font-size: 13px;">Junit4</a> <a href="/tags/Linux/" style="font-size: 14px;">Linux</a> <a href="/tags/Maven/" style="font-size: 13px;">Maven</a> <a href="/tags/MyBatis/" style="font-size: 13.5px;">MyBatis</a> <a href="/tags/Redis/" style="font-size: 13.83px;">Redis</a> <a href="/tags/SSM/" style="font-size: 13.33px;">SSM</a> <a href="/tags/Servlet/" style="font-size: 13.17px;">Servlet</a> <a href="/tags/Spring/" style="font-size: 13.5px;">Spring</a> <a href="/tags/SpringBoot/" style="font-size: 13.17px;">SpringBoot</a> <a href="/tags/SpringMVC/" style="font-size: 13.67px;">SpringMVC</a> <a href="/tags/ZooKeeper/" style="font-size: 13.17px;">ZooKeeper</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/02/">二月 2019</a><span class="archive-list-count">82</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/Redis云平台Cachecloud/" class="title">Redis云平台Cachecloud</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:13:27.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/缓存的使用与设计/" class="title">缓存的使用与设计</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:11:51.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/RedisCluster开发运维常见问题/" class="title">RedisCluster开发运维常见问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:10:47.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/Redis-Cluster/" class="title">Redis Cluster</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:06:05.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Tools/">Tools</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+              </p>
+              <p class="item-title">
+                <a href="/passages/Tools/Redis/Redis-Sentinel开发运维常见问题/" class="title">Redis Sentinel开发运维常见问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-28T03:04:43.000Z" itemprop="datePublished">2019-02-28</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Tools/Redis/Redis持久化的取舍和选择" class="article article-type-post" itemscope="" itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Redis持久化的取舍和选择
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/passages/Tools/Redis/Redis持久化的取舍和选择/" class="article-date">
+	  <time datetime="2019-02-28T02:53:41.000Z" itemprop="datePublished">2019-02-28</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Tools/">Tools</a>►<a class="article-category-link" href="/categories/Tools/Redis-持更/">Redis(持更...)</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/Redis/">Redis</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/passages/Tools/Redis/Redis持久化的取舍和选择/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 531(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 2(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <!-- 文章的摘要内容 -->
+<a id="more"></a>
+<!-- 文章的正式内容 -->
+<h3 id="Redis持久化的取舍和选择"><a href="#Redis持久化的取舍和选择" class="headerlink" title="Redis持久化的取舍和选择"></a>Redis持久化的取舍和选择</h3><ul>
+<li>持久化的作用</li>
+<li>RDB</li>
+<li>AOF</li>
+<li>RDB和AOF的抉择</li>
+</ul>
+<h4 id="持久化的作用"><a href="#持久化的作用" class="headerlink" title="持久化的作用"></a>持久化的作用</h4><ul>
+<li>什么是持久化</li>
+<li>持久化的实现方式<h5 id="什么是持久化"><a href="#什么是持久化" class="headerlink" title="什么是持久化"></a>什么是持久化</h5>redis所有数据保存在内存中，对数据的更新将异步地保存到磁盘上<h5 id="持久化方式"><a href="#持久化方式" class="headerlink" title="持久化方式"></a>持久化方式</h5></li>
+</ul>
+<ol>
+<li>快照——MySql Dump、Redis RDB</li>
+<li>写日志——MySql Binlog、Hbase HLog、Redis AOF</li>
+</ol>
+<h4 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h4><ul>
+<li>什么是RDB</li>
+<li>触发机制—主要三种方式</li>
+<li>触发机制—不容忽略方式</li>
+<li>试验<h5 id="什么是RDB"><a href="#什么是RDB" class="headerlink" title="什么是RDB"></a>什么是RDB</h5><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/1.png" alt="35c4c7f02503d184327bd0213b6506c1.png"><h5 id="三种方式"><a href="#三种方式" class="headerlink" title="三种方式"></a>三种方式</h5></li>
+</ul>
+<ol>
+<li>save命令<br><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/2.png" alt="9c18d0b0954d3798e4cb3b077ec9f6b7.png"><br><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/3.png" alt="b4dd05cce67ddd4a45572eaf23a6d249.png"></li>
+<li>bgsave<br><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/4.png" alt="be43b960a87a3f10c044e4f1afd298a0.png"></li>
+<li>自动<br><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/5.png" alt="417ddff2f6a91b49b5ff1bbbefa6b783.png"></li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>save</th>
+<th>bgsave</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IO类型</td>
+<td>同步</td>
+<td>异步</td>
+</tr>
+<tr>
+<td>阻塞？</td>
+<td>是</td>
+<td>是（阻塞发生在fork）</td>
+</tr>
+<tr>
+<td>复杂度</td>
+<td>O(n)</td>
+<td>O(n)</td>
+</tr>
+<tr>
+<td>优点</td>
+<td>不会消耗额外内存</td>
+<td>不阻塞客户端命令</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>阻塞客户端命令</td>
+<td>需要fork，消耗内存</td>
+</tr>
+</tbody>
+</table>
+<h5 id="不容忽略方式"><a href="#不容忽略方式" class="headerlink" title="不容忽略方式"></a>不容忽略方式</h5><ol>
+<li>全量复制</li>
+<li>debug reload</li>
+<li>shutdown<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5></li>
+<li>RDB是Redis内存到硬盘的快照，用于持久化</li>
+<li>save通常会阻塞Redis</li>
+<li>bgsave不会阻塞Redis，但是会fork新进程</li>
+<li>save自动配置满足任一就会被执行</li>
+<li>有些触发机制不容忽视</li>
+</ol>
+<h4 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h4><ul>
+<li>RDB现存问题</li>
+<li>什么是AOF</li>
+<li>AOF三种策略</li>
+<li>AOF重写</li>
+</ul>
+<h5 id="RDB问题"><a href="#RDB问题" class="headerlink" title="RDB问题"></a>RDB问题</h5><ol>
+<li>耗时、耗性能<br><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/6.png" alt="ebda1d272024a596a381c29781c53682.png"></li>
+<li>不可控、丢失数据<br><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/7.png" alt="8d0d85046ffb92d05e6961ca0b802b45.png"></li>
+</ol>
+<h5 id="什么是AOF"><a href="#什么是AOF" class="headerlink" title="什么是AOF"></a>什么是AOF</h5><p><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/8.png" alt="image.png"><br><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/9.png" alt="8a0280753c82c38c206677ae1d46e3a7.png"></p>
+<h5 id="AOF的三种策略"><a href="#AOF的三种策略" class="headerlink" title="AOF的三种策略"></a>AOF的三种策略</h5><ol>
+<li>always<br><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/10.png" alt="22165b3d499da7dfde6ae6167c11c40f.png"></li>
+<li>everysec<br><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/11.png" alt="bc40bbe18ce0b132751e3b5617b28679.png"></li>
+<li>no<br><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/12.png" alt="f2e8e815f3408e84796a966f6db56fd5.png"></li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>always</th>
+<th>everysec</th>
+<th>no</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>优点</td>
+<td>不丢失数据</td>
+<td>每秒一次fsync 丢一秒数据</td>
+<td>不用管</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>IO开销较大，一般的sata盘只有几百TPS</td>
+<td>丢一秒数据</td>
+<td>不可控</td>
+</tr>
+</tbody>
+</table>
+<h5 id="AOF重写"><a href="#AOF重写" class="headerlink" title="AOF重写"></a>AOF重写</h5><p><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/13.png" alt="953a7f1dfea538a97d5d20d835555d71.png"><br><strong>作用</strong></p>
+<ul>
+<li>减少硬盘占用量</li>
+<li>加速恢复速度<h5 id="AOF重写实现两种方式"><a href="#AOF重写实现两种方式" class="headerlink" title="AOF重写实现两种方式"></a>AOF重写实现两种方式</h5></li>
+<li>bgrewriteaof<br><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/14.png" alt="007105915d809402f3a88cc80640c678.png"></li>
+<li>AOF重写配置<br><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/15.png" alt="0cf5968c43cfe83aebe54fdc21d7270c.png"><h5 id="AOF重写流程"><a href="#AOF重写流程" class="headerlink" title="AOF重写流程"></a>AOF重写流程</h5><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/16.png" alt="4614918af153520537a225c1c31d1d6b.png"><h5 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h5><img src="/passages/Tools/Redis/Redis持久化的取舍和选择/17.png" alt="1faa03f0cf546230146e7cb9c40f2bd8.png"><h4 id="RDB与AOF的抉择"><a href="#RDB与AOF的抉择" class="headerlink" title="RDB与AOF的抉择"></a>RDB与AOF的抉择</h4></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>RDB</th>
+<th>AOF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>启动优先级</td>
+<td>低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>体积</td>
+<td>小</td>
+<td>大</td>
+</tr>
+<tr>
+<td>恢复速度</td>
+<td>快</td>
+<td>慢</td>
+</tr>
+<tr>
+<td>数据安全性</td>
+<td>丢数据</td>
+<td>根据策略决定</td>
+</tr>
+<tr>
+<td>轻重</td>
+<td>重</td>
+<td>轻</td>
+</tr>
+</tbody>
+</table>
+<h5 id="RDB最佳策略"><a href="#RDB最佳策略" class="headerlink" title="RDB最佳策略"></a>RDB最佳策略</h5><ol>
+<li>“关”</li>
+<li>集中管理</li>
+<li>主从，从开？</li>
+</ol>
+<h5 id="AOF最佳策略"><a href="#AOF最佳策略" class="headerlink" title="AOF最佳策略"></a>AOF最佳策略</h5><ol>
+<li>“开”：缓存和存储</li>
+<li>AOF重写集中管理</li>
+<li>everysec</li>
+</ol>
+<h5 id="最佳策略"><a href="#最佳策略" class="headerlink" title="最佳策略"></a>最佳策略</h5><ol>
+<li>小分片</li>
+<li>缓存或者存储</li>
+<li>监控（硬盘、内存、负载、网络）</li>
+<li>足够的内存</li>
+</ol>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/" title="Redis持久化的取舍和选择" target="_blank" rel="external">http://kwin1113.github.io/passages/Tools/Redis/Redis持久化的取舍和选择/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/Kwin1113" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/Kwin1113" target="_blank"><span class="text-dark">Kwin Jing</span><small class="ml-1x">Java后端开发</small></a></h3>
+        <div>过的好也不好。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom="">
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/passages/Tools/Redis/Redis开发运维常见问题/" title="Redis开发运维常见问题"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/passages/Tools/Redis/Redis的功能/" title="Redis的功能"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope="" itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/Kwin1113" target="_blank" title="Github" data-toggle="tooltip" data-placement="top"><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="https://weibo.com/u/5371472697" target="_blank" title="Weibo" data-toggle="tooltip" data-placement="top"><i class="icon icon-weibo"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        &copy; 2019 Kwin Jing
+        
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/js/plugin.min.js"></script>
+<script src="/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+
+
+  <script src="//cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.3.5/dist/jquery.fancybox.min.js"></script>
+  <script>
+  //利用 FancyBox 实现点击图片放大
+  $(document).ready(function() {
+    $('article img').not('[hidden]').not('.panel-body img').each(function() {
+      var $image = $(this);
+      var imageCaption = $image.attr('alt');
+      var $imageWrapLink = $image.parent('a');
+      if ($imageWrapLink.length < 1) {
+        var src = this.getAttribute('src');
+        var idx = src.lastIndexOf('?');
+        if (idx != -1) {
+          src = src.substring(0, idx);
+        }
+        $imageWrapLink = $image.wrap('<a href="' + src + '"></a>').parent('a');
+      }
+      $imageWrapLink.attr('data-fancybox', 'images');
+      if (imageCaption) {
+        $imageWrapLink.attr('data-caption', imageCaption);
+      }
+    });
+    $().fancybox({
+      selector: '[data-fancybox="images"]',
+      hash: false,
+      loop: false,
+    });
+  });
+  </script>
+
+
+
+
+
+</body>
+</html>
